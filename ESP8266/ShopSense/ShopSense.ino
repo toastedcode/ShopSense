@@ -24,8 +24,11 @@
 // Pin ids for the ESP8266.
 // Connect GPIO 1 to sensor.
 // Connect GPIO 2 to ground via hardware reset button.
-const int SENSOR_PIN_ID = 1;
-const int RESET_PIN_ID = 2;
+const int SENSOR_PIN_ID = 2;
+const int RESET_PIN_ID = 0;
+
+// HTTP port
+const int HTTP_PORT = 80;
 
 // *****************************************************************************
 //                               Class definitions
@@ -45,6 +48,7 @@ public:
    // This operation reads from the sensor pin and returns the current value.   
    int read()
    {
+      pinMode(pinId, INPUT);
       return (digitalRead(pinId));
    }
    
@@ -72,11 +76,17 @@ struct Config
    // The password that this sensor should use in connecting to the Wifi network.
    const char* password = "";
    
-   // The unique sensor name to be used when posting readings to the server.
-   const char* sensorName = "";
+   // The unique sensor id to be used when posting readings to the server.
+   const char* sensorId = "";
+
+   // The rate (in milliseconds) at which the sensor will be read.
+   int readingRate = 0;
    
-   // The sensor polling and reporting rate.
+   // The rate (in milliseconds) at which the average reading will be sent to the server.
    int pollRate = 0;
+
+   // A flag indicating if the sensor should only report changed sensor values.
+   bool reportOnChanged = false;
    
    // The address of the sensor server.
    const char* serverAddress = "";
@@ -125,41 +135,62 @@ public:
       // TODO: Configure via Web server.
       config.ssid = "NETGEAR69";
       config.password = "silentsky723";
-      config.sensorName = "vibration_01";
-      config.pollRate = 5000;
+      config.sensorId = "vibration_01";
+      config.readingRate = 100;
+      config.pollRate = 1000;
+      config.reportOnChanged = true;
       config.serverAddress = "www.roboxes.com";
       isConfigured = true;
    
       // Connect to the Wifi network
       connectWifi();
       
-      // Start our polling timer.
+      // Start our timers.
+      readingTimer.start(config.readingRate);
       pollTimer.start(config.pollRate);
    }
 
    // This operation should be run from within the main control loop.   
    void run()
    {
-      // Loop indefinitely.
-      while (true)
-      {
-         if (isConfigured)
-         {
-            if (pollTimer.isExpired())
-            {
-               printDebug("Polling ...\n");
-               
-               // Read from the sensor.
-               int reading = sensorPin.read();
+       if (isConfigured)
+       {
+          if (readingTimer.isExpired())
+          {
+             //printDebug("Reading ...\n");
+             
+             // Read from the sensor.
+             int reading = sensorPin.read();
+
+             // Compute the running sum.
+             readingSum += reading;
             
-               // Send an update to the server.
-               sendReading(reading);
-               
-               // Restart the poll timer.
-               pollTimer.start(config.pollRate);
-            }
-         }
-      }
+             // Restart the reading timer.
+             readingTimer.start(config.readingRate);
+          }
+
+          if (pollTimer.isExpired())
+          {
+             printDebug("Polling ...\n");
+             
+             int averageReading = int(((float)readingSum / (float)(config.pollRate / config.readingRate)) + 0.5);
+
+             printDebug("Sum = " + String(readingSum) + "; average = " + String(averageReading) + "\n");
+            
+             if ((config.reportOnChanged == false) ||
+                 (averageReading != lastReading))
+             {
+                // Send an update to the server.
+                sendReading(averageReading);
+             }
+
+             lastReading = averageReading;
+             readingSum = 0;
+
+             // Restart the poll timer.
+             pollTimer.start(config.pollRate);
+          }
+       }
    }
    
 private:
@@ -212,11 +243,33 @@ private:
    {
       if (isConfigured)
       {
-         printDebug("Sending sensor reading [");
-         printDebug(reading);
-         printDebug("] to sensor server at ");
-         printDebug(config.serverAddress);
-         printDebug(".\n");
+         printDebug("Sending sensor reading [" + String(reading) + "] to sensor server at " + String(config.serverAddress) + ".\n");
+
+         // Construct the HTTP GET request.
+         String request = "GET /shopSense.php?command=data&sensor_id=" + String(config.sensorId) + "&sensor_reading=" + reading + " HTTP/1.0";
+         printDebug("HTTP request = \"" + request + "\"\n");
+
+         WiFiClient client;
+
+         // Connect to the server.
+         if (client.connect(config.serverAddress, HTTP_PORT) == false)
+         {
+            printDebug("Failed to connect to server.");
+         }
+         else
+         {
+            // Make the request.
+            client.println(request);
+            client.println("HOST: roboxes.com");
+            client.println();
+
+            // Read all the lines of the reply from server.
+            while(client.available())
+            {
+               String line = client.readStringUntil('\r');
+               printDebug(line);
+            }
+         }
       }
    }
 
@@ -234,9 +287,18 @@ private:
    
    // The current sensor configuration data.
    Config config;
+
+   // The timer used in timing the sensor readings.
+   Timer readingTimer;
    
    // The timer used in timing the sensor polling and reporting.
    Timer pollTimer;
+
+   // A running sum of sensor readings that will be used to compute an average.
+   int readingSum = 0;
+
+   // The last reading reported by this sensor.
+   int lastReading = 0;
 };
 
 // *****************************************************************************
@@ -252,10 +314,15 @@ Sensor sensor;
 
 void setup()
 {
+   Serial.begin(9600);
+
+   printDebug("setup\n");
    sensor.setup();
 }
 
 void loop()
 {
    sensor.run();
+
+   delay(10);
 }
