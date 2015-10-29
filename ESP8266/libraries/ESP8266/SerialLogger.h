@@ -1,25 +1,30 @@
 // *****************************************************************************
 // *****************************************************************************
-// Timer.h
+// SerialLogger.h
 //
 // Author: Jason Tost
-// Date:   9.23.2015
+// Date:   10.29.2015
 //
 // *****************************************************************************
 // *****************************************************************************
 
-#include "Arduino.h"
-#include "Timer.h"
+#ifndef SERIALLOGGER_H_INCLUDED
+#define SERIALLOGGER_H_INCLUDED
 
-void Timer::start(
-   int delay)
-{
-   this->delay = delay;
-   startTime = millis();
-}
+#include "Logger.h"
 
-bool Timer::isExpired()
+class SerialLogger : public Logger
 {
-   return ((startTime != 0) &&
-           ((millis() - startTime) > delay));
-}
+
+public:
+
+   SerialLogger();
+
+   virtual ~SerialLogger();
+
+   virtual void log(
+      String string);
+
+};
+
+#endif  // SERIALLOGGER_H_INCLUDED

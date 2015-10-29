@@ -10,7 +10,8 @@
 
 #include "Pin.h"
 
-Pin::Pin(int pinId)
+Pin::Pin(
+   const int& pinId)
 {
    this->pinId = pinId;
 }
@@ -21,7 +22,8 @@ int Pin::read()
    return (digitalRead(pinId));
 }
    
-int Pin::write(int value)
+int Pin::write(
+   const int& value)
 {
    pinMode(pinId, OUTPUT);
    digitalWrite(pinId, value);

@@ -20,18 +20,33 @@ class Pin
 public:
 
    // Constructor.
-   Pin(int pinId);
+   Pin(
+      // The GPIO pin id.
+      const int& pinId);
+
+   // This operation returns the pin id of the GPIO pin represented by this object.
+   int getPinId() const;
 
    // This operation reads from the sensor pin and returns the current value.   
    int read();
    
    // This operation writes the specified value to the sensor pin.
-   int write(int value);
+   int write(
+      // The value to write.
+      const int& value);
    
 private:
    
    // The GPIO pin represented by this class.
    int pinId;
 };
+
+// *****************************************************************************
+//                               Inline functions
+
+inline int Pin::getPinId() const
+{
+   return (pinId);
+}
 
 #endif  // PIN_H_INCLUDED
