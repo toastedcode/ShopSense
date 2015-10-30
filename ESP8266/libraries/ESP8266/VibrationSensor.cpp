@@ -28,6 +28,7 @@ VibrationSensor::~VibrationSensor()
 
 void VibrationSensor::setup()
 {
+   updateTimer.start();
 }
 
 void VibrationSensor::run()
@@ -62,7 +63,8 @@ void VibrationSensor::run()
         currentReading = reading;
 
         // Send an update to the server.
-        SensorUpdateMsg message(sensorId, MessageRouter::SERVER_ID, currentReading);
+        SensorUpdateMsg message(sensorId, currentReading);
+        message.address(sensorId, MessageRouter::SERVER_ID);
         MessageRouter::sendMessage(&message);
      }
 
@@ -71,7 +73,7 @@ void VibrationSensor::run()
      vibrationCount = 0;
 
      // Restart the udpate timer.
-     updateTimer.restart();
+     updateTimer.start();
    }
 }
 

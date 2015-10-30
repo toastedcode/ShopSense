@@ -36,6 +36,12 @@ bool HttpProtocol::serialize(
 
    if (messageId == SensorUpdateMsg::getMessageId())
    {
+     const SensorUpdateMsg* castMessage = static_cast<const SensorUpdateMsg*>(message);
+
+     serializedMessage = "command=data&sensor_id=" +
+                         castMessage->getSensorId() +
+                         "&sensor_reading=" +
+                         String(castMessage->getSensorReading());
    }
    else
    {

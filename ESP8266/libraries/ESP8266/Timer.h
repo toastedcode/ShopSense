@@ -18,13 +18,24 @@ class Timer
 
 public:
 
-   // This operation starts the timer.
-   void start(
-      // The delay (in milliseconds) of the timer.
+   // Constructor.
+   Timer();
+
+   // Constructor.
+   Timer(
+      // The delay (milliseconds).
       const int& delay);
 
-   // This operation restarts the timer with the current delay.
-   void restart();
+   // Destructor.
+   ~Timer();
+
+   // This operation sets the delay for the timer.
+   void setDelay(
+      // The delay (milliseconds).
+      int delay);
+
+   // This operation starts the timer.
+   void start();
 
    // This operation stops the timer.
    void stop();
@@ -34,7 +45,7 @@ public:
 
    // This operation return true if the timer has expired.
    bool isExpired() const;
-   
+
 private:
 
    // The delay (in milliseconds) associated with this timer.
@@ -48,6 +59,17 @@ private:
 // *****************************************************************************
 //                               Inline functions
 
+inline void Timer::setDelay(
+   int delay)
+{
+   this->delay = delay;
+}
+
+inline void Timer::start()
+{
+   startTime = millis();
+}
+
 inline void Timer::stop()
 {
    startTime = 0;
@@ -55,7 +77,7 @@ inline void Timer::stop()
 
 inline bool Timer::isRunning() const
 {
-   return (startTime == 0);
+   return (startTime != 0);
 }
 
 inline bool Timer::isExpired() const

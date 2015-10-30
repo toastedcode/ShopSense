@@ -23,7 +23,7 @@ public:
    virtual ~SerialLogger();
 
    virtual void log(
-      String string);
+      const String& string);
 
 };
 

@@ -10,14 +10,19 @@
 
 #include "Timer.h"
 
-void Timer::start(
+Timer::Timer()
+{
+   this->delay = 0;
+   startTime = 0;
+}
+
+Timer::Timer(
    const int& delay)
 {
    this->delay = delay;
-   startTime = millis();
+   startTime = 0;
 }
 
-void Timer::restart()
+Timer::~Timer()
 {
-   startTime = millis();
 }

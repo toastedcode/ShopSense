@@ -9,12 +9,17 @@
 // *****************************************************************************
 
 #include "ESP8266.h"
+#include "Logger.h"
 
 Esp8266* Esp8266::instance = 0;
 
 Esp8266::Esp8266()
 {
-   // Nothing to do here.
+   // Create pins.
+   for (int pinId = 1; pinId <= MAX_NUM_PINS; pinId++)
+   {
+      pins[pinId - 1] = new Pin(pinId);
+   }
 }
 
 Esp8266::~Esp8266()
@@ -41,7 +46,7 @@ bool Esp8266::connectWifi(
    const String& password,
    const int& connectionTimeout)
 {
-   Serial.println("Connecting to Wifi network " + ssid + "\n");
+   Logger::logDebug("Connecting to Wifi network " + ssid);
 
    WiFi.mode(WIFI_STA);
    WiFi.begin(ssid.c_str(), password.c_str());
@@ -54,17 +59,17 @@ bool Esp8266::connectWifi(
    {
       delay(1000);
       secondsToConnect++;
-      Serial.println(" .");
+      Logger::logDebug(" .");
    }
 
    if (isConnected())
    {
-      Serial.println(" success!\n");
-      Serial.println("Connected at " + getIpAddress());
+      Logger::logDebug(" success!\n");
+      Logger::logDebug("Connected at " + getIpAddress());
    }
    else
    {
-      Serial.println(" failed!\n");
+      Logger::logDebug(" failed!\n");
    }
 
    return (isConnected());

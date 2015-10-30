@@ -20,12 +20,14 @@ public:
 
    // Constructor.
    Message(
-      const String& messageId,
-      const String& sourceId,
-      const String& destinationId);
+      const String& messageId);
 
    // Destructor.
    virtual ~Message();
+
+   void address(
+      const String& sourceId,
+      const String& destinationId);
 
    // This operation retrieves the message id.
    String getMessageId() const;

@@ -9,6 +9,8 @@
 // *****************************************************************************
 
 #include "ButtonSensor.h"
+#include "MessageRouter.h"
+#include "SensorUpdateMsg.h"
 
 ButtonSensor::ButtonSensor(
    const String& sensorId,
@@ -22,6 +24,7 @@ ButtonSensor::~ButtonSensor()
 
 void ButtonSensor::setup()
 {
+   updateTimer.start();
 }
 
 void ButtonSensor::run()
@@ -30,12 +33,17 @@ void ButtonSensor::run()
    {
       int reading = getPin()->read();
 
-      if (reading != currentReading)
+      //if (reading != currentReading)
       {
          currentReading = reading;
+
+        // Send an update to the server.
+        SensorUpdateMsg message(sensorId, currentReading);
+        message.address(sensorId, MessageRouter::SERVER_ID);
+        MessageRouter::sendMessage(&message);
       }
 
-      updateTimer.restart();
+      updateTimer.start();
    }
 }
 

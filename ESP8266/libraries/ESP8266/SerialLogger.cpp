@@ -12,7 +12,6 @@
 
 SerialLogger::SerialLogger() : Logger()
 {
-
 }
 
 SerialLogger::~SerialLogger()
@@ -21,7 +20,7 @@ SerialLogger::~SerialLogger()
 }
 
 void SerialLogger::log(
-   String string)
+   const String& string)
 {
-   Serial.println(string);
+   Serial.print(string);
 }

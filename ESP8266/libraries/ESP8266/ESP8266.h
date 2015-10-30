@@ -104,7 +104,7 @@ inline bool Esp8266::isConnected() const
 inline Pin* Esp8266::getPin(
    const int& pinId) const
 {
-   return (pins[pinId]);
+   return (pins[pinId - 1]);
 }
 
 #endif  // ESP8266_H_INCLUDED

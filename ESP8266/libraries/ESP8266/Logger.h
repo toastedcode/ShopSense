@@ -26,10 +26,10 @@ public:
       Logger* logger);
 
    static void logDebug(
-      String string);
+      const String& string);
 
    virtual void log(
-      String string);
+      const String& string);
 
 protected:
 
@@ -45,7 +45,7 @@ private:
 //                               Inline functions
 
 inline void Logger::logDebug(
-   String string)
+   const String& string)
 {
    getInstance()->log(string);
 }

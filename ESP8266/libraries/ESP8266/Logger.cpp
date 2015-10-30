@@ -34,6 +34,6 @@ Logger::~Logger()
 }
 
 void Logger::log(
-   String string)
+   const String& string)
 {
 }

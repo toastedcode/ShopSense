@@ -32,16 +32,19 @@ Sensor* sensor;
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.println("Starting ... \n\n");
+  
   Logger::setLogger(new SerialLogger());
 
-  Logger::logDebug("********************************");
-  Logger::logDebug("********** Simple IoT **********");
-  Logger::logDebug("********************************");
+  Logger::logDebug("********************************\n");
+  Logger::logDebug("********** Simple IoT **********\n");
+  Logger::logDebug("********************************\n");
   Logger::logDebug("\n");
   
   Esp8266::getInstance()->connectWifi(SSID, PASSWORD);
 
-  sensor = new VibrationSensor(SENSOR_NAME, SENSOR_PIN);
+  sensor = new ButtonSensor(SENSOR_NAME, SENSOR_PIN);
   sensor->setUpdateRate(UPDATE_RATE);
 
   sensor->setup();

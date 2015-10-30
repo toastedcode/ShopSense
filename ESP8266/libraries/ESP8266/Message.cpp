@@ -11,16 +11,20 @@
 #include "Message.h"
 
 Message::Message(
-   const String& messageId,
-   const String& sourceId,
-   const String& destinationId)
+   const String& messageId)
 {
    this->messageId = messageId;
-   this->sourceId = sourceId;
-   this->destinationId = destinationId;
 }
 
 Message::~Message()
 {
    // Nothing to do here.
+}
+
+void Message::address(
+   const String& sourceId,
+   const String& destinationId)
+{
+   this->sourceId = sourceId;
+   this->destinationId = destinationId;
 }

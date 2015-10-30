@@ -11,10 +11,10 @@
 #include "SensorUpdateMsg.h"
 
 SensorUpdateMsg::SensorUpdateMsg(
-   const String& sourceId,
-   const String& destinationId,
-   const int& sensorReading) : Message(getMessageId(), sourceId, destinationId)
+   const String& sensorId,
+   const int& sensorReading) : Message(getMessageId())
 {
+   this->sensorId = sensorId;
    this->sensorReading = sensorReading;
 }
 

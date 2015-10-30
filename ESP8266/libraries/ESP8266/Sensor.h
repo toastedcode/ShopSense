@@ -20,7 +20,7 @@ class Sensor
 {
 
 public:
-   
+
    // Constructor.
    Sensor(
       // A unique identifer for this sensor.
@@ -82,7 +82,7 @@ inline String Sensor::getSensorId() const
 inline void Sensor::setUpdateRate(
    const int& updateRate)
 {
-   updateTimer.start(updateRate);
+   updateTimer.setDelay(updateRate);
 }
 
 inline int Sensor::getCurrentReading() const
