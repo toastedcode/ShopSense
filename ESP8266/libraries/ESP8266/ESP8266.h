@@ -21,13 +21,7 @@ class Esp8266
 
 public:
 
-   // Constructor.
-   Esp8266();
-
-   // Destructor.
-   virtual ~Esp8266();
-
-   // Gets an instance to the Singleton.
+   // Get the Singleton instance.
    static Esp8266* getInstance();
 
    // This operation retrieves the MAC address of the ESP8266.
@@ -75,6 +69,12 @@ public:
    static const int MAX_NUM_PINS = 12;
 
 private:
+
+   // Constructor.
+   Esp8266();
+
+   // Destructor.
+   virtual ~Esp8266();
 
    // The Singleton instance.
    static Esp8266* instance;

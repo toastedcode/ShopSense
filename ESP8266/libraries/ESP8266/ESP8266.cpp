@@ -85,7 +85,7 @@ bool Esp8266::startAccessPoint(
 void Esp8266::handleMessage(
    const Message* message)
 {
-
+   // TODO
 }
 
 void Esp8266::reset()

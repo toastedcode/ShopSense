@@ -19,8 +19,10 @@ class Protocol
 
 public:
 
+   // Constructor.
    Protocol();
 
+   // Destructor.
    virtual ~Protocol();
 
    virtual bool parse(
@@ -28,7 +30,7 @@ public:
       Message* message) = 0;
 
    virtual bool serialize(
-      const Message* message,
+      const Message& message,
       String& serializedMessage) = 0;
 
 private:

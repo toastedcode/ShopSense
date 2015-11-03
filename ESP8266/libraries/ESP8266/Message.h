@@ -25,8 +25,11 @@ public:
    // Destructor.
    virtual ~Message();
 
+   // This operation sets the source and destination fields of the message.
    void address(
+      // The source of the message.
       const String& sourceId,
+      // The destination of the message.
       const String& destinationId);
 
    // This operation retrieves the message id.
@@ -37,6 +40,9 @@ public:
 
    // This operation retrieves the message id.
    String getDestination() const;
+
+   // A unique identifier for a server adapter.
+   static const String SERVER_ID;
 
 private:
 

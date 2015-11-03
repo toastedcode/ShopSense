@@ -21,7 +21,7 @@ public:
    // Constructor.
    ButtonSensor(
       // A unique identifer for this sensor.
-      const String& sensorId,
+      const String& id,
       // The GPIO pin that will be used by this sensor.
       const int& pinId);
 
@@ -35,9 +35,9 @@ public:
    virtual void run();
 
    // This operation handles a message directed to this sensor.
-   virtual void handleMessage(
+   virtual bool handleMessage(
       // The message to handle.
-      const Message* message);
+      const Message& message);
    
 };
 

@@ -13,10 +13,11 @@
 
 #include "Esp8266.h"
 #include "Message.h"
+#include "MessageHandler.h"
 #include "Pin.h"
 #include "Timer.h"
 
-class Sensor
+class Sensor : public MessageHandler
 {
 
 public:
@@ -24,15 +25,12 @@ public:
    // Constructor.
    Sensor(
       // A unique identifer for this sensor.
-      const String& sensorId,
+      const String& id,
       // The GPIO pin that will be used by this sensor.
       const int& pinId);
 
    // Destructor.
    virtual ~Sensor();
-
-   // Retrieves the sensor id.
-   String getSensorId() const;
 
    // This operation should be called on startup to prepare the sensor for polling/updating.
    virtual void setup() = 0;
@@ -49,17 +47,14 @@ public:
    int getCurrentReading() const;
 
    // This operation handles a message directed to this sensor.
-   virtual void handleMessage(
+   virtual bool handleMessage(
       // The message to handle.
-      const Message* message);
+      const Message& message);
 
 protected:
 
    // This operation retrieves a pointer to the GPIO pin object used by this sensor.
    Pin* getPin() const;
-
-   // A unique identifier for this sensor.
-   String sensorId;
 
    // The pin that will be used to for reading and writing to the sensor.
    int pinId;
@@ -73,11 +68,6 @@ protected:
 
 // *****************************************************************************
 //                               Inline functions
-
-inline String Sensor::getSensorId() const
-{
-   return (sensorId);
-}
 
 inline void Sensor::setUpdateRate(
    const int& updateRate)

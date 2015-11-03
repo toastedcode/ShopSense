@@ -8,23 +8,34 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#include "Logger.h"
 #include "Sensor.h"
+#include "SetUpdateRateMsg.h"
 
 Sensor::Sensor(
-   const String& sensorId,
-   const int& pinId)
+   const String& id,
+   const int& pinId) : MessageHandler(id)
 {
-    this->sensorId = sensorId;
     this->pinId = pinId;
 }
 
 Sensor::~Sensor()
 {
-
 }
 
-void Sensor::handleMessage(
-   const Message* message)
+bool Sensor::handleMessage(
+   const Message& message)
 {
-   // No action.
+   bool handled = false;
+
+   if (message.getMessageId() == SetUpdateRateMsg::getMessageId())
+   {
+      const SetUpdateRateMsg* castMessage = static_cast<const SetUpdateRateMsg*>(&message);
+
+      Logger::logDebug("Setting update rate to " + String(castMessage->getUpdateRate()) + ".\n");
+
+      setUpdateRate(castMessage->getUpdateRate());
+   }
+
+   return (handled);
 }

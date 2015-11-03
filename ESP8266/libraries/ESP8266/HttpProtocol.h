@@ -20,8 +20,10 @@ class HttpProtocol : public Protocol
 
 public:
 
+   // Constructor.
    HttpProtocol();
 
+   // Destructor.
    virtual ~HttpProtocol();
 
    virtual bool parse(
@@ -29,11 +31,31 @@ public:
       Message* message);
 
    virtual bool serialize(
-      const Message* message,
+      const Message& message,
       String& serializedMessage);
 
 private:
 
+   // This operation parses out the specified parameter from a string.
+   bool getParameter(
+      // The string to parse.
+      const String& string,
+      // The parameter name to search for.
+      const String& parameterName,
+      // The parsed parameter.
+      String& parameter) const;
+
 };
+
+// *****************************************************************************
+//                               Inline functions
+
+inline HttpProtocol::HttpProtocol()
+{
+}
+
+inline HttpProtocol::~HttpProtocol()
+{
+}
 
 #endif  // HTTPPROTOCOL_H_INCLUDED

@@ -8,11 +8,14 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#include <ButtonSensor.h>
 #include <ESP8266.h>
 #include <ESP8266WiFi.h>
-#include <ButtonSensor.h>
+#include <HttpProtocol.h>
+#include <MessageRouter.h>
 #include <SerialLogger.h>
 #include <VibrationSensor.h>
+#include <WebAdapter.h>
 
 // *****************************************************************************
 //                               Global variables
@@ -20,11 +23,15 @@
 
 static const String SSID = "NETGEAR69"; 
 static const String PASSWORD = "silentsky723";
+//static const String SSID = "compunetix-guest"; 
+//static const String PASSWORD = "compunetix";
 static const String SENSOR_NAME = "button_01";
 static const int SENSOR_PIN = 2;
-static const int UPDATE_RATE = 1000;  // 1 second
+static const int UPDATE_RATE = 5000;  // 1 second
 
-Sensor* sensor;
+ButtonSensor sensor(SENSOR_NAME, SENSOR_PIN);
+WebAdapter serverAdapter(Message::SERVER_ID);
+HttpProtocol serverProtocol;
 
 // *****************************************************************************
 //                               Arduino functions
@@ -33,8 +40,7 @@ Sensor* sensor;
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("Starting ... \n\n");
-  
+ 
   Logger::setLogger(new SerialLogger());
 
   Logger::logDebug("********************************\n");
@@ -44,13 +50,22 @@ void setup()
   
   Esp8266::getInstance()->connectWifi(SSID, PASSWORD);
 
-  sensor = new ButtonSensor(SENSOR_NAME, SENSOR_PIN);
-  sensor->setUpdateRate(UPDATE_RATE);
+   // Configure the adapter we'll use to communicate with the server.
+  serverAdapter.setProtocol(serverProtocol);
+  serverAdapter.setServerAddress("www.roboxes.com");
+  serverAdapter.setServerPage("shopSense.php");
+  MessageRouter::getInstance()->registerAdapter(serverAdapter);
 
-  sensor->setup();
+  // Configure the sensor.
+  sensor.setUpdateRate(UPDATE_RATE);
+  MessageRouter::getInstance()->registerHandler(sensor);
+
+  sensor.setup();
 }
 
 void loop()
 {
-  sensor->run();
+  MessageRouter::getInstance()->run();
+  
+  sensor.run();
 }

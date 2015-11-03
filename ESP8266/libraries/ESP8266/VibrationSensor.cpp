@@ -17,8 +17,8 @@ static const int VIBRATION_DETECTED = HIGH;
 static const float SENSITIVITY = 0.5;  //  Percentage of vibrations detected in update cycle.
 
 VibrationSensor::VibrationSensor(
-   const String& sensorId,
-   const int& pinId) : Sensor(sensorId, pinId)
+   const String& id,
+   const int& pinId) : Sensor(id, pinId)
 {
 }
 
@@ -63,9 +63,9 @@ void VibrationSensor::run()
         currentReading = reading;
 
         // Send an update to the server.
-        SensorUpdateMsg message(sensorId, currentReading);
-        message.address(sensorId, MessageRouter::SERVER_ID);
-        MessageRouter::sendMessage(&message);
+        SensorUpdateMsg message(getId(), currentReading);
+        message.address(getId(), Message::SERVER_ID);
+        MessageRouter::getInstance()->sendMessage(message);
      }
 
      // Reset counters.
@@ -77,8 +77,8 @@ void VibrationSensor::run()
    }
 }
 
-void VibrationSensor::handleMessage(
-   const Message* message)
+bool VibrationSensor::handleMessage(
+   const Message& message)
 {
-   Sensor::handleMessage(message);
+   return (Sensor::handleMessage(message));
 }

@@ -13,8 +13,8 @@
 #include "SensorUpdateMsg.h"
 
 ButtonSensor::ButtonSensor(
-   const String& sensorId,
-   const int& pinId) : Sensor(sensorId, pinId)
+   const String& id,
+   const int& pinId) : Sensor(id, pinId)
 {
 }
 
@@ -33,22 +33,22 @@ void ButtonSensor::run()
    {
       int reading = getPin()->read();
 
-      //if (reading != currentReading)
+      if (reading != currentReading)
       {
          currentReading = reading;
 
         // Send an update to the server.
-        SensorUpdateMsg message(sensorId, currentReading);
-        message.address(sensorId, MessageRouter::SERVER_ID);
-        MessageRouter::sendMessage(&message);
+        SensorUpdateMsg message(getId(), currentReading);
+        message.address(getId(), Message::SERVER_ID);
+        MessageRouter::getInstance()->sendMessage(message);
       }
 
       updateTimer.start();
    }
 }
 
-void ButtonSensor::handleMessage(
-   const Message* message)
+bool ButtonSensor::handleMessage(
+   const Message& message)
 {
-   Sensor::handleMessage(message);
+   return (Sensor::handleMessage(message));
 }
