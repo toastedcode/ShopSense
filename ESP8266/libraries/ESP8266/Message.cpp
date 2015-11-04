@@ -10,8 +10,6 @@
 
 #include "Message.h"
 
-const String Message::SERVER_ID = "server";
-
 Message::Message(
    const String& messageId)
 {

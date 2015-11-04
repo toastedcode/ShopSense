@@ -14,9 +14,10 @@
 #include "Arduino.h"
 #include "ESP8266WiFi.h"
 #include "Message.h"
+#include "MessageHandler.h"
 #include "Pin.h"
 
-class Esp8266
+class Esp8266 : MessageHandler
 {
 
 public:
@@ -58,9 +59,9 @@ public:
       const int& pinId) const;
 
    // This operation handles a message directed to the ESP8266 itself.
-   void handleMessage(
+   bool handleMessage(
       // The message to handle.
-      const Message* message);
+      const Message& message);
 
    // Resets the processor.
    void reset();

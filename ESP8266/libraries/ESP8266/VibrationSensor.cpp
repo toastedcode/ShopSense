@@ -64,7 +64,7 @@ void VibrationSensor::run()
 
         // Send an update to the server.
         SensorUpdateMsg message(getId(), currentReading);
-        message.address(getId(), Message::SERVER_ID);
+        message.address(getId(), SERVER_ID);
         MessageRouter::getInstance()->sendMessage(message);
      }
 

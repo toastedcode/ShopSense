@@ -10,7 +10,6 @@
 
 #include "Adapter.h"
 
-
 Adapter::Adapter(
    const String& id)
 {

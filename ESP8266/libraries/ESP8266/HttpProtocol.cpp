@@ -35,7 +35,7 @@ bool HttpProtocol::parse(
       if (getParameter(string, "sensor_id", sensorId))
       {
          message = new PingMsg();
-         message->address(Message::SERVER_ID, sensorId);
+         message->address(SERVER_ID, sensorId);
          parsed = true;
       }
       else
@@ -55,7 +55,7 @@ bool HttpProtocol::parse(
 
       {
          message = new SetUpdateRateMsg(updateRate.toInt());
-         message->address(Message::SERVER_ID, sensorId);
+         message->address(SERVER_ID, sensorId);
          parsed = true;
       }
       else

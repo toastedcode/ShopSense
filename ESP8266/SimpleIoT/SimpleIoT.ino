@@ -30,7 +30,9 @@ static const int SENSOR_PIN = 2;
 static const int UPDATE_RATE = 5000;  // 1 second
 
 ButtonSensor sensor(SENSOR_NAME, SENSOR_PIN);
-WebAdapter serverAdapter(Message::SERVER_ID);
+
+WebAdapter serverAdapter(SERVER_ID);
+
 HttpProtocol serverProtocol;
 
 // *****************************************************************************
@@ -50,7 +52,7 @@ void setup()
   
   Esp8266::getInstance()->connectWifi(SSID, PASSWORD);
 
-   // Configure the adapter we'll use to communicate with the server.
+  // Configure the adapter we'll use to communicate with the server.
   serverAdapter.setProtocol(serverProtocol);
   serverAdapter.setServerAddress("www.roboxes.com");
   serverAdapter.setServerPage("shopSense.php");

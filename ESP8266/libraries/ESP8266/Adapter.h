@@ -29,7 +29,7 @@ public:
    virtual ~Adapter();
 
    // This operation retrieves the unique id for the adapter.
-   String getId();
+   String getId() const;
 
    // This operation sets the protocol object that will be used for serializing/parsing messages.
    void setProtocol(
@@ -59,7 +59,7 @@ protected:
 // *****************************************************************************
 //                               Inline functions
 
-inline String Adapter::getId()
+inline String Adapter::getId() const
 {
    return (id);
 }

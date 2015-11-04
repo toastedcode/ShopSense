@@ -11,9 +11,27 @@
 #include "ESP8266.h"
 #include "Logger.h"
 
+// TODO: Move to Utility.h
+String toString(
+   const IPAddress& ipAddress)
+{
+   String string = "";
+
+   for (int octet = 0; octet < 4; octet++)
+   {
+      string += String(ipAddress[octet]);
+      if (octet < 3)
+      {
+         string += ".";
+      }
+   }
+
+   return (string);
+}
+
 Esp8266* Esp8266::instance = 0;
 
-Esp8266::Esp8266()
+Esp8266::Esp8266() : MessageHandler(ESP8266_ID)
 {
    // Create pins.
    for (int pinId = 1; pinId <= MAX_NUM_PINS; pinId++)
@@ -65,7 +83,7 @@ bool Esp8266::connectWifi(
    if (isConnected())
    {
       Logger::logDebug(" success!\n");
-      Logger::logDebug("Connected at " + getIpAddress());
+      Logger::logDebug("Connected at " + toString(getIpAddress()) + "\n");
    }
    else
    {
@@ -82,8 +100,8 @@ bool Esp8266::startAccessPoint(
    // TODO
 }
 
-void Esp8266::handleMessage(
-   const Message* message)
+bool Esp8266::handleMessage(
+   const Message& message)
 {
    // TODO
 }

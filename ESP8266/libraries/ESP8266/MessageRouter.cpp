@@ -59,6 +59,7 @@ bool MessageRouter::registerAdapter(
       {
          adapters[i] = &adapter;
          isRegistered = true;
+         break;
       }
    }
 
@@ -76,13 +77,14 @@ bool MessageRouter::registerHandler(
 {
    bool isRegistered = false;
 
-   // Find an empty slot and store the adapter.
+   // Find an empty slot and store the handler.
    for (int i = 0; i < MAX_NUM_HANDLERS; i++)
    {
       if (handlers[i] == 0)
       {
          handlers[i] = &handler;
          isRegistered = true;
+         break;
       }
    }
 
@@ -101,6 +103,12 @@ MessageRouter::MessageRouter()
    for (int i = 0; i < MAX_NUM_ADAPTERS; i++)
    {
       adapters[i] = 0;
+   }
+
+   // Initialize our array of registered handlers.
+   for (int i = 0; i < MAX_NUM_HANDLERS; i++)
+   {
+      handlers[i] = 0;
    }
 }
 

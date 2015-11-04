@@ -13,6 +13,12 @@
 
 #include "Arduino.h"
 
+// A unique identifier for the ESP8266 object.
+const String ESP8266_ID = "esp8266";
+
+// A unique identifier for a server adapter.
+const String SERVER_ID = "server";
+
 class Message
 {
 
@@ -40,9 +46,6 @@ public:
 
    // This operation retrieves the message id.
    String getDestination() const;
-
-   // A unique identifier for a server adapter.
-   static const String SERVER_ID;
 
 private:
 
