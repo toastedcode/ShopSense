@@ -10,24 +10,7 @@
 
 #include "ESP8266.h"
 #include "Logger.h"
-
-// TODO: Move to Utility.h
-String toString(
-   const IPAddress& ipAddress)
-{
-   String string = "";
-
-   for (int octet = 0; octet < 4; octet++)
-   {
-      string += String(ipAddress[octet]);
-      if (octet < 3)
-      {
-         string += ".";
-      }
-   }
-
-   return (string);
-}
+#include "Utility.h"
 
 Esp8266* Esp8266::instance = 0;
 
@@ -83,7 +66,7 @@ bool Esp8266::connectWifi(
    if (isConnected())
    {
       Logger::logDebug(" success!\n");
-      Logger::logDebug("Connected at " + toString(getIpAddress()) + "\n");
+      Logger::logDebug("Connected at " + Utility::toString(getIpAddress()) + "\n");
    }
    else
    {

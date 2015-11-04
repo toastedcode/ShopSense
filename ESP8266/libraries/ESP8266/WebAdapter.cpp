@@ -9,6 +9,7 @@
 // *****************************************************************************
 
 #include "Logger.h"
+#include "Utility.h"
 #include "WebAdapter.h"
 
 // Default HTTP port.
@@ -85,12 +86,26 @@ const Message* WebAdapter::getMessage()
 
    WiFiClient connectedClient = server.available();
 
-   if (connectedClient.available())
+   if (connectedClient)
    {
-      String string = connectedClient.readStringUntil('\r');
-      connectedClient.flush();
+      Logger::logDebug("Client connected from " + Utility::toString(connectedClient.remoteIP()) + "\n");
 
-      protocol->parse(string, message);
+      if (connectedClient.connected())
+      {
+         Logger::logDebug("Client is connected\n");
+
+         if (connectedClient.available())
+         {
+            Logger::logDebug("Data from client is available\n");
+
+            String string = connectedClient.readStringUntil('\r');
+            connectedClient.flush();
+
+            Logger::logDebug("Read data from client: " + string + "\n");
+
+            protocol->parse(string, message);
+         }
+      }
    }
 
    return (message);
