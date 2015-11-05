@@ -16,8 +16,6 @@ MessageRouter* MessageRouter::instance = 0;
 
 void MessageRouter::run()
 {
-   Message* message = 0;
-
    for (int i = 0; i < MAX_NUM_ADAPTERS; i++)
    {
       if (adapters[i] != 0)

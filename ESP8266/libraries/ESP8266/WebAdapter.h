@@ -50,7 +50,7 @@ protected:
    // A reusable client object for sending HTTP messages.
    static WiFiClient client;
 
-   // A reuable server object for sending HTTP messages.
+   // A reuable server object for receiving HTTP messages.
    static WiFiServer server;
 
    // The address of the web server used for sending messages.

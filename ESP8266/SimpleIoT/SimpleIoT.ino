@@ -25,11 +25,13 @@ static const String SSID = "NETGEAR69";
 static const String PASSWORD = "silentsky723";
 //static const String SSID = "compunetix-guest"; 
 //static const String PASSWORD = "compunetix";
-static const String SENSOR_NAME = "button_01";
+//static const String SENSOR_NAME = "button_01";
+static const String SENSOR_NAME = "vibration_01";
 static const int SENSOR_PIN = 2;
 static const int UPDATE_RATE = 5000;  // 1 second
 
-ButtonSensor sensor(SENSOR_NAME, SENSOR_PIN);
+//ButtonSensor sensor(SENSOR_NAME, SENSOR_PIN);
+VibrationSensor sensor(SENSOR_NAME, SENSOR_PIN);
 
 WebAdapter serverAdapter(SERVER_ID);
 

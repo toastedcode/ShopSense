@@ -69,7 +69,7 @@ bool WebAdapter::sendMessage(
             Logger::logDebug(line);
          }
 
-         //client.disconnect();
+         client.stop();
       }
    }
    else

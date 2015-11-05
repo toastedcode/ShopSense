@@ -12,15 +12,12 @@ void setup()
   Serial.print("*********************************\n");
   Serial.print("\n");
 
+  WiFi.mode(WIFI_AP);
   WiFi.softAP("ESPWIFI");
 
+  server.begin();
+
   Serial.print("Starting access point ");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500); 
-    Serial.print(". ");
-  }
-  Serial.print("success!\n");
 }
 
 void loop() 
@@ -51,6 +48,18 @@ void loop()
             connectedClient.flush();
 
             Serial.print("Read data from client: " + string + "\n");
+
+            String response = "HTTP/1.1 200 OK\r\n";
+            response += "Content-Type: text/html\r\n\r\n";
+            response += "<!DOCTYPE HTML>\r\n";
+            response += "<html><body>boner town, open for business</body></html>\r\n";
+
+            connectedClient.print(response);
+
+            delay(1);
+
+            connectedClient.stop();
+            
          }
          else
          {
@@ -58,6 +67,4 @@ void loop()
          }
       }
    }
-
-   delay(500);
 }
