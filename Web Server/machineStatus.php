@@ -29,7 +29,7 @@ function getSensorReading($sensorId)
 	$conn = mysqlConnect();
 
 	// Construct the query.
-	$sql = "SELECT sensor_reading FROM data ORDER BY index DESC LIMIT 1";
+	$sql = "SELECT sensor_reading FROM data ORDER BY id DESC LIMIT 1";
 
 	// Retrieve from database.
 	$result = $conn->query($sql);
