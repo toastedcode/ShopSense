@@ -16,12 +16,18 @@
 #include "ReadPinReplyMsg.h"
 #include "SensorUpdateMsg.h"
 #include "SetUpdateRateMsg.h"
+#include "WifiConfigMsg.h"
+#include "WifiConfigReplyMsg.h"
 #include "WritePinMsg.h"
 #include "WritePinReplyMsg.h"
+
+static const bool REQUIRED = true;
+static const bool OPTIONAL = false;
 
 static const String PING_REPLY_HTML = "<html><body><div>Ping reply from %s</div></body></html>";
 static const String READ_PIN_REPLY_HTML = "<html><body><div>(%s) Read pin %d, value = %d</div></body></html>";
 static const String WRITE_PIN_REPLY_HTML = "<html><body><div>(%s) Write pin %d, value = %d</div></body></html>";
+static const String WIFI_CONFIG_REPLY_HTML = "<html><b>Wifi Setup</b></p><form method=\"get\" action=\"#\"><table><tr><td>SSID:</td><td><input type=\"text\" name=\"ssid\"/></td></tr><tr><td>Password:</td><td><input type=\"password\" name=\"password\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
 
 bool HttpProtocol::parse(
    const String& string,
@@ -33,7 +39,7 @@ bool HttpProtocol::parse(
    Logger::logDebug("Parsing: " + string + "\n");
 
    String command = "";
-   getParameter(string, "command", command);
+   getParameter(string, "command", REQUIRED, command);
 
    Logger::logDebug("Parsed: " + command + "\n");
 
@@ -50,7 +56,7 @@ bool HttpProtocol::parse(
    {
       String pinId = "";
 
-      if (getParameter(string, "pin", pinId))
+      if (getParameter(string, "pin", REQUIRED, pinId))
       {
          message = new ReadPinMsg(pinId.toInt());
          parsed = true;
@@ -67,8 +73,8 @@ bool HttpProtocol::parse(
       String pinId = "";
       String value = "";
 
-      if (getParameter(string, "pin", pinId) &&
-          getParameter(string, "value", value))
+      if (getParameter(string, "pin", REQUIRED, pinId) &&
+          getParameter(string, "value", REQUIRED, value))
       {
          message = new WritePinMsg(pinId.toInt(), value.toInt());
          parsed = true;
@@ -85,12 +91,30 @@ bool HttpProtocol::parse(
       String sensorId = "";
       String updateRate = "";
 
-      if (getParameter(string, "sensor_id", sensorId) &&
-          getParameter(string, "updateRate", updateRate))
+      if (getParameter(string, "sensor_id", REQUIRED, sensorId) &&
+          getParameter(string, "updateRate", REQUIRED, updateRate))
 
       {
          message = new SetUpdateRateMsg(updateRate.toInt());
-         message->address(SERVER_ID, sensorId);
+         parsed = true;
+      }
+      else
+      {
+         Logger::logDebug("Bad message format: \"" + string + "\".\n");
+      }
+   }
+   // WIFI_CONFIG
+   // Format: command=wifi_config&ssid=<ssid>&password=<password>
+   else if (command == "wifi_config")
+   {
+      String ssid = "";
+      String password = "";
+
+      if (getParameter(string, "ssid", OPTIONAL, ssid) &&
+          getParameter(string, "password", OPTIONAL, password))
+
+      {
+         message = new WifiConfigMsg(ssid, password);
          parsed = true;
       }
       else
@@ -200,6 +224,26 @@ bool HttpProtocol::serialize(
          serialized = true;
       }
    }
+   // WIFI_CONFIG_REPLY_MSG
+   else if (messageId == WifiConfigReplyMsg::getMessageId())
+   {
+      const WifiConfigReplyMsg* castMessage = static_cast<const WifiConfigReplyMsg*>(&message);
+
+      if (castMessage == 0)
+      {
+         Logger::logDebug("Invalid message: \"" + message.getMessageId() + "\".\n");
+      }
+      else
+      {
+         char buffer[256];
+         sprintf(buffer,
+                 WIFI_CONFIG_REPLY_HTML.c_str());
+
+         string = httpReply(String(buffer));
+
+         serialized = true;
+      }
+   }
    else
    {
       Logger::logDebug("Unsupported message: \"" + message.getMessageId() + "\".\n");
@@ -212,9 +256,12 @@ bool HttpProtocol::serialize(
 bool HttpProtocol::getParameter(
    const String& string,
    const String& parameterName,
+   const bool& isRequired,
    String& parameter) const
 {
    const String PARAM_SEPERATOR = "&";
+
+   bool success = !isRequired;
 
    int startPos = string.indexOf(parameterName);
 
@@ -234,7 +281,12 @@ bool HttpProtocol::getParameter(
 
       // Extract the parameter.
       parameter = string.substring(startPos, endPos);
+
+      // Record our success.
+      success |= true;
    }
+
+   return (success);
 }
 
 String HttpProtocol::httpReply(

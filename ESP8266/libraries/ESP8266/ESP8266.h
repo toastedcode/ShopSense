@@ -13,11 +13,9 @@
 
 #include "Arduino.h"
 #include "ESP8266WiFi.h"
-#include "Message.h"
-#include "MessageHandler.h"
 #include "Pin.h"
 
-class Esp8266 : MessageHandler
+class Esp8266
 {
 
 public:
@@ -25,16 +23,19 @@ public:
    // Get the Singleton instance.
    static Esp8266* getInstance();
 
-   // TODO: A better way to get this object registered?
-   void setup();
-
    // This operation retrieves the MAC address of the ESP8266.
    String getMacAddress() const;
 
    // This operation retrieves the current IP address (if connected) of the ESP8266.
    IPAddress getIpAddress() const;
 
-   // This operation attempts to connect to the specified Wifi network.
+   // This operation attempts to connect to the specified Wifi network using the stored SSID and password.
+   // True is returned if the operation was successful; false otherwise.
+   // Note: This operation blocks while attempting to make the connection.
+   bool connectWifi(
+      const int& connectionTimeout = 30);
+
+   // This operation attempts to connect to the specified Wifi network using the specified SSID and password.
    // True is returned if the operation was successful; false otherwise.
    // Note: This operation blocks while attempting to make the connection.
    bool connectWifi(
@@ -60,11 +61,6 @@ public:
    // Retrieves a pointer to the specified Pin object.
    Pin* getPin(
       const int& pinId) const;
-
-   // This operation handles a message directed to the ESP8266 itself.
-   bool handleMessage(
-      // The message to handle.
-      const Message& message);
 
    // Resets the processor.
    void reset();

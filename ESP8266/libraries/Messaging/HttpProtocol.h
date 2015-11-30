@@ -42,6 +42,8 @@ private:
       const String& string,
       // The parameter name to search for.
       const String& parameterName,
+      // A flag indicating if the parameter should be optional.
+      const bool& isOptional,
       // The parsed parameter.
       String& parameter) const;
 

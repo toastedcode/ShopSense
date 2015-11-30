@@ -47,7 +47,10 @@ private:
 inline void Logger::logDebug(
    const String& string)
 {
-   getInstance()->log(string);
+   if (instance)
+   {
+      getInstance()->log(string);
+   }
 }
 
 inline Logger* Logger::getInstance()
