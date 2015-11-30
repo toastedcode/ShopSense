@@ -25,6 +25,9 @@ public:
    // Get the Singleton instance.
    static Esp8266* getInstance();
 
+   // TODO: A better way to get this object registered?
+   void setup();
+
    // This operation retrieves the MAC address of the ESP8266.
    String getMacAddress() const;
 
