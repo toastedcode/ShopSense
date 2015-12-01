@@ -119,6 +119,8 @@ bool Esp8266::startAccessPoint(
    const String& ssid,
    const String& password)
 {
+   Logger::logDebug("Creating wireless network " + ssid);
+
    WiFi.mode(WIFI_AP);
    WiFi.softAP(ssid.c_str(), password.c_str());
 }

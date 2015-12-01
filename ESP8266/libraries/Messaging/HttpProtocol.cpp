@@ -27,7 +27,7 @@ static const bool OPTIONAL = false;
 static const String PING_REPLY_HTML = "<html><body><div>Ping reply from %s</div></body></html>";
 static const String READ_PIN_REPLY_HTML = "<html><body><div>(%s) Read pin %d, value = %d</div></body></html>";
 static const String WRITE_PIN_REPLY_HTML = "<html><body><div>(%s) Write pin %d, value = %d</div></body></html>";
-static const String WIFI_CONFIG_REPLY_HTML = "<html><b>Wifi Setup</b></p><form method=\"get\" action=\"#\"><table><tr><td>SSID:</td><td><input type=\"text\" name=\"ssid\"/></td></tr><tr><td>Password:</td><td><input type=\"password\" name=\"password\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
+static const String WIFI_CONFIG_REPLY_HTML = "<html><b>Wifi Setup</b></p><form method=\"get\" action=\"#\"><input type=\"hidden\" name=\"command\" value=\"wifi_config\"/><table><tr><td>SSID:</td><td><input type=\"text\" name=\"ssid\"/></td></tr><tr><td>Password:</td><td><input type=\"password\" name=\"password\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
 
 bool HttpProtocol::parse(
    const String& string,
@@ -112,7 +112,6 @@ bool HttpProtocol::parse(
 
       if (getParameter(string, "ssid", OPTIONAL, ssid) &&
           getParameter(string, "password", OPTIONAL, password))
-
       {
          message = new WifiConfigMsg(ssid, password);
          parsed = true;
@@ -235,7 +234,7 @@ bool HttpProtocol::serialize(
       }
       else
       {
-         char buffer[256];
+         char buffer[512];
          sprintf(buffer,
                  WIFI_CONFIG_REPLY_HTML.c_str());
 
@@ -252,6 +251,14 @@ bool HttpProtocol::serialize(
    return (serialized);
 }
 
+// TODO
+int findFirstOf(String string, String characters, int position)
+{
+   for (int pos = 0; pos < characters.length(); pos++)
+   {
+
+   }
+}
 
 bool HttpProtocol::getParameter(
    const String& string,
@@ -260,6 +267,7 @@ bool HttpProtocol::getParameter(
    String& parameter) const
 {
    const String PARAM_SEPERATOR = "&";
+   const String SPACE = " ";
 
    bool success = !isRequired;
 

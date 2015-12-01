@@ -42,7 +42,7 @@ bool WebServerAdapter::sendMessage(
 
    String serializedMessage;
 
-   if (client && (client.connected()))
+   if (client && client.connected())
    {
       if ((protocol) &&
           (protocol->serialize(message, serializedMessage) == true))
