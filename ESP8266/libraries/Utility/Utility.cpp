@@ -25,3 +25,25 @@ String Utility::toString(
 
    return (string);
 }
+
+
+// TODO
+int Utility::findFirstOf(
+   const String& string,
+   const String& characters,
+   const int& position)
+{
+   int firstPos = -1;
+
+   for (int pos = 0; pos < characters.length(); pos++)
+   {
+      int foundPos = string.indexOf(characters.charAt(pos), position);
+
+      if (foundPos != -1)
+      {
+         firstPos = std::min(firstPos, foundPos);
+      }
+   }
+
+   return (firstPos);
+}

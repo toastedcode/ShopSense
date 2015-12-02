@@ -54,7 +54,6 @@ void ToastBot::run()
    MessageRouter::getInstance()->run();
 }
 
-
 bool ToastBot::handleMessage(
    const Message& message)
 {

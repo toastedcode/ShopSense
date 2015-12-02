@@ -23,6 +23,15 @@ public:
    static String toString(
       // The IP address to convert.
       const IPAddress& ipAddress);
+
+   // This operation searches a string for the first character that matches any of the specified characters.
+   static int findFirstOf(
+      // The string to search.
+      const String& string,
+      // A string containing the characters to search for.
+      const String& characters,
+      // The position in the string to start the search.
+      const int& position = 0);
 };
 
 #endif  // end UTILITY_H_INCLUDED

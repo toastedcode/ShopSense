@@ -16,6 +16,8 @@
 #include "ReadPinReplyMsg.h"
 #include "SensorUpdateMsg.h"
 #include "SetUpdateRateMsg.h"
+#include "Utility.h"
+#include "VibrationSensorConfigMsg.h"
 #include "WifiConfigMsg.h"
 #include "WifiConfigReplyMsg.h"
 #include "WritePinMsg.h"
@@ -114,6 +116,34 @@ bool HttpProtocol::parse(
           getParameter(string, "password", OPTIONAL, password))
       {
          message = new WifiConfigMsg(ssid, password);
+         parsed = true;
+      }
+      else
+      {
+         Logger::logDebug("Bad message format: \"" + string + "\".\n");
+      }
+   }
+   // VIBRATION_SENSOR_CONFIG
+   // Format: command=vibration_sensor_config&server_ip=&sensitivity=&responsiveness=&update_rate=&is_enabled=
+   else if (command == "vibration_sensor_config")
+   {
+      String serverIpAddress = "";
+      String sensitivity =  "";
+      String responsiveness = "";
+      String updateRate = "";
+      String isEnabled = "";
+
+      if (getParameter(string, "server_ip_address", OPTIONAL, serverIpAddress) &&
+          getParameter(string, "sensitivity", OPTIONAL, sensitivity) &&
+          getParameter(string, "responsiveness", OPTIONAL, responsiveness) &&
+          getParameter(string, "update_rate", OPTIONAL, updateRate) &&
+          getParameter(string, "is_enabled", OPTIONAL, isEnabled))
+      {
+         message = new VibrationSensorConfigMsg(serverIpAddress,
+                                                sensitivity.toInt(),
+                                                responsiveness.toInt(),
+                                                updateRate.toInt(),
+                                                ((isEnabled == "true") ? true : false));
          parsed = true;
       }
       else
@@ -251,22 +281,13 @@ bool HttpProtocol::serialize(
    return (serialized);
 }
 
-// TODO
-int findFirstOf(String string, String characters, int position)
-{
-   for (int pos = 0; pos < characters.length(); pos++)
-   {
-
-   }
-}
-
 bool HttpProtocol::getParameter(
    const String& string,
    const String& parameterName,
    const bool& isRequired,
    String& parameter) const
 {
-   const String PARAM_SEPERATOR = "&";
+   const String PARAM_SEPERATORS = "& ";
    const String SPACE = " ";
 
    bool success = !isRequired;
@@ -280,7 +301,7 @@ bool HttpProtocol::getParameter(
       // Format: parameterName=parameter&
       //
       startPos += parameterName.length() + 1;  // +1 for "=" sign.
-      int endPos = string.indexOf(PARAM_SEPERATOR, startPos);
+      int endPos = Utility::findFirstOf(string, PARAM_SEPERATORS, startPos);
 
       if (endPos == -1)
       {
