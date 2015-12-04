@@ -20,22 +20,25 @@ public:
 
    // Constructor.
    VibrationSensorConfigMsg(
+      // The sensor id.
+      const String& sensorId,
       // The server IP address.
       const String& serverIpAddress,
       // The configured sensor sensitivity.
       const int& sensitivity,
       // The configured sensor responsiveness.
       const int& responsiveness,
-      // The sensor update rate.
-      const int& updateRate,
       // A flag indicating if the sensor is enabled.
       const bool& isEnabled);
 
    // Destructor.
    virtual ~VibrationSensorConfigMsg();
 
-   // This operation returns the unique message id.
-   static String getMessageId();
+   // This operation retrieves the message id.
+   virtual MessageId getMessageId() const;
+
+   // This operation returns the sensor id.
+   String getSensorId() const;
 
    // This operation returns the server IP address.
    String getServerIpAddress() const;
@@ -46,13 +49,16 @@ public:
    // This operation returns the sensor responsiveness.
    int getResponsiveness() const;
 
-   // This operation returns the sensor update rate.
-   int getUpdateRate() const;
-
    // This operation returns a flag indicating if the sensor is enabled.
    bool getIsEnabled() const;
 
+   // Unique message id.
+   static const MessageId MESSAGE_ID = VIBRATION_SENSOR_CONFIG;
+
 private:
+
+   // The sensor id.
+   String sensorId;
 
    // The server IP address.
    String serverIpAddress;
@@ -63,9 +69,6 @@ private:
    // The sensor responsiveness.
    int responsiveness;
 
-   // The senor update rate.
-   int updateRate;
-
    // A flag indicating if the sensor is enabled.
    bool isEnabled;
 };
@@ -74,16 +77,16 @@ private:
 //                               Inline functions
 
 inline VibrationSensorConfigMsg::VibrationSensorConfigMsg(
+   const String& sensorId,
    const String& serverIpAddress,
    const int& sensitivity,
    const int& responsiveness,
-   const int& updateRate,
-   const bool& isEnabled) : Message(getMessageId())
+   const bool& isEnabled) : Message()
 {
+   this->sensorId = sensorId;
    this->serverIpAddress = serverIpAddress;
    this->sensitivity = sensitivity;
    this->responsiveness = responsiveness;
-   this->updateRate = updateRate;
    this->isEnabled = isEnabled;
 }
 
@@ -92,9 +95,14 @@ inline VibrationSensorConfigMsg::~VibrationSensorConfigMsg()
    // Nothing to do here.
 }
 
-inline String VibrationSensorConfigMsg::getMessageId()
+inline MessageId VibrationSensorConfigMsg::getMessageId() const
 {
-   return ("VIBRATION_SENSOR_CONFIG_MSG");
+   return (MESSAGE_ID);
+}
+
+inline String VibrationSensorConfigMsg::getSensorId() const
+{
+   return (sensorId);
 }
 
 inline String VibrationSensorConfigMsg::getServerIpAddress() const
@@ -110,11 +118,6 @@ inline int VibrationSensorConfigMsg::getSensitivity() const
 inline int VibrationSensorConfigMsg::getResponsiveness() const
 {
    return (responsiveness);
-}
-
-inline int VibrationSensorConfigMsg::getUpdateRate() const
-{
-   return (updateRate);
 }
 
 inline bool VibrationSensorConfigMsg::getIsEnabled() const

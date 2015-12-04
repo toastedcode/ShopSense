@@ -12,18 +12,11 @@
 #include "HttpProtocol.h"
 #include "Logger.h"
 #include "MessageRouter.h"
-#include "PingMsg.h"
-#include "PingReplyMsg.h"
-#include "ReadPinMsg.h"
-#include "ReadPinReplyMsg.h"
+#include "Messages.h"
 #include "SerialAdapter.h"
 #include "SerialLogger.h"
 #include "ToastBot.h"
 #include "Utility.h"
-#include "WifiConfigMsg.h"
-#include "WifiConfigReplyMsg.h"
-#include "WritePinMsg.h"
-#include "WritePinReplyMsg.h"
 
 ToastBot* ToastBot::instance;
 
@@ -39,7 +32,7 @@ void ToastBot::begin()
    MessageRouter::getInstance()->registerAdapter(adapter);
 
    // Connect to a network via the ESP8266 wifi adapter.
-   if (Esp8266::getInstance()->connectWifi() == false)
+   if (Esp8266::getInstance()->connectWifi(15) == false)
    {
       // If the ESP8266 failes to connect with the stored credentials, we'll create an AP to allow for wifi config.
       Esp8266::getInstance()->startAccessPoint("TOASTBOT", "");
@@ -60,7 +53,7 @@ bool ToastBot::handleMessage(
    bool handled = false;
 
    // PING
-   if (message.getMessageId() == PingMsg::getMessageId())
+   if (message.getMessageId() == PingMsg::MESSAGE_ID)
    {
       Logger::logDebug("Ping\n");
 
@@ -69,7 +62,7 @@ bool ToastBot::handleMessage(
       replyMessage->address(getId(), message.getSource());
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }
-   else if (message.getMessageId() == WifiConfigMsg::getMessageId())
+   if (message.getMessageId() == WifiConfigMsg::MESSAGE_ID)
    {
       Logger::logDebug("Wifi Config\n");
 
@@ -91,14 +84,14 @@ bool ToastBot::handleMessage(
       }
    }
    /*
-   else if (message.getMessageId() == ResetMsg::getMessageId())
+   else if (message.getMessageId() == ResetMsg::MESSAGE_ID)
    {
       Logger::logDebug("Reset\n");
 
       // TODO
    }
    */
-   else if (message.getMessageId() == ReadPinMsg::getMessageId())
+   else if (message.getMessageId() == ReadPinMsg::MESSAGE_ID)
    {
       Logger::logDebug("Read Pin\n");
 
@@ -119,7 +112,7 @@ bool ToastBot::handleMessage(
       replyMessage->address(getId(), message.getSource());
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }
-   else if (message.getMessageId() == WritePinMsg::getMessageId())
+   else if (message.getMessageId() == WritePinMsg::MESSAGE_ID)
    {
       Logger::logDebug("Write Pin\n");
 
@@ -140,7 +133,7 @@ bool ToastBot::handleMessage(
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }
    /*
-   else if (message.getMessageId() == SetPinModeMsg::getMessageId())
+   else if (message.getMessageId() == SetPinModeMsg::MESSAGE_ID)
    {
       Logger::logDebug("Set Pin Mode\n");
 
@@ -161,6 +154,23 @@ bool ToastBot::handleMessage(
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }
    */
+   else if (message.getMessageId() == VibrationSensorConfigMsg::MESSAGE_ID)
+   {
+      Logger::logDebug("Vibration Sensor Config\n");
+
+      bool success = false;
+
+      const VibrationSensorConfigMsg* castMessage = static_cast<const VibrationSensorConfigMsg*>(&message);
+
+      Message* replyMessage = new VibrationSensorConfigReplyMsg(castMessage->getSensorId(),
+                                                                castMessage->getServerIpAddress(),
+                                                                castMessage->getSensitivity(),
+                                                                castMessage->getResponsiveness(),
+                                                                castMessage->getIsEnabled(),
+                                                                success);
+      replyMessage->address(getId(), message.getSource());
+      MessageRouter::getInstance()->sendMessage(*replyMessage);
+   }
 
    return (handled);
 }

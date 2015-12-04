@@ -36,7 +36,7 @@ bool MessageRouter::sendMessage(
 
    if (adapter == 0)
    {
-      Logger::logDebug("Failed to send " + message.getMessageId() +
+      Logger::logDebug("Failed to send " + toString(message.getMessageId()) +
                        ". No adapter specified for destination \"" + message.getDestination() + "\"\n");
    }
    else
@@ -180,7 +180,7 @@ void MessageRouter::handleMessages(
 
    if (message)
    {
-      Logger::logDebug("MessageRouter::handleMessages: Got message " + message->getMessageId() + ".\n");
+      Logger::logDebug("MessageRouter::handleMessages: Got message " + toString(message->getMessageId()) + ".\n");
    }
 
    while (message)
@@ -189,7 +189,7 @@ void MessageRouter::handleMessages(
 
       if (!handler)
       {
-         Logger::logDebug("Failed to handle message " + message->getMessageId() +
+         Logger::logDebug("Failed to handle message " + toString(message->getMessageId()) +
                           ". No handler specified for destination \"" + message->getDestination() + "\"\n");
       }
       else
@@ -206,7 +206,7 @@ void MessageRouter::handleMessages(
 
       if (message)
       {
-         Logger::logDebug(" MessageRouter::handleMessages: Got message " + message->getMessageId() + ".\n");
+         Logger::logDebug("MessageRouter::handleMessages: Got message " + toString(message->getMessageId()) + ".\n");
       }
    }
 }

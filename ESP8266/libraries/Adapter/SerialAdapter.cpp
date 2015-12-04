@@ -36,7 +36,7 @@ bool SerialAdapter::sendMessage(
    }
    else
    {
-      Logger::logDebug("Failed to serialize message " + message.getMessageId() + ".\n");
+      Logger::logDebug("Failed to serialize message " + toString(message.getMessageId()) + ".\n");
    }
 
    return (messageSent);

@@ -32,6 +32,13 @@ public:
       const String& characters,
       // The position in the string to start the search.
       const int& position = 0);
+
+   // This operation returns the next token from the specified string, broken up by any of the specified delimiters.
+   static String tokenize(
+      // The string to tokenize.
+      String& string,
+      // A string containing the characters to search for.
+      const String& delimiters);
 };
 
 #endif  // end UTILITY_H_INCLUDED

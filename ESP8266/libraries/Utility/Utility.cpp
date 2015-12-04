@@ -27,7 +27,6 @@ String Utility::toString(
 }
 
 
-// TODO
 int Utility::findFirstOf(
    const String& string,
    const String& characters,
@@ -41,9 +40,38 @@ int Utility::findFirstOf(
 
       if (foundPos != -1)
       {
-         firstPos = std::min(firstPos, foundPos);
+         firstPos = (firstPos == -1) ? foundPos : std::min(firstPos, foundPos);
       }
    }
 
    return (firstPos);
+}
+
+String Utility::tokenize(
+   String& string,
+   const String& delimiters)
+{
+   String token = "";
+
+   // Strip off leading delimiters.
+   while (findFirstOf(string, delimiters, 0) == 0)
+   {
+      string = string.substring(1);
+   }
+
+   // Now search for first occurance of a delimiter.
+   int firstPos = findFirstOf(string, delimiters, 0);
+
+   if (firstPos == -1)
+   {
+      token = string;
+      string = "";
+   }
+   else
+   {
+      token = string.substring(0, firstPos);
+      string = string.substring(firstPos + 1);
+   }
+
+   return (token);
 }

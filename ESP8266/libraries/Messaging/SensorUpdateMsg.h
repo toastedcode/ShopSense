@@ -27,13 +27,16 @@ public:
    virtual ~SensorUpdateMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
 
    // This operation returns the id of the sensor being reported.
    String getSensorId() const;
 
    // This operation returns the sensor reading being reported.
    int getSensorReading() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = SENSOR_UPDATE;
 
 private:
 
@@ -48,9 +51,21 @@ private:
 // *****************************************************************************
 //                               Inline functions
 
-inline String SensorUpdateMsg::getMessageId()
+inline SensorUpdateMsg::SensorUpdateMsg(
+   const String& sensorId,
+   const int& sensorReading) : Message()
 {
-   return ("SENSOR_UPDATE_MSG");
+   this->sensorId = sensorId;
+   this->sensorReading = sensorReading;
+}
+
+inline SensorUpdateMsg::~SensorUpdateMsg()
+{
+}
+
+inline MessageId SensorUpdateMsg::getMessageId() const
+{
+   return (MESSAGE_ID);
 }
 
 inline String SensorUpdateMsg::getSensorId() const

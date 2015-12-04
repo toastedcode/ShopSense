@@ -31,7 +31,7 @@ public:
    virtual ~WritePinReplyMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
 
    // This operation returns the pin that was to be written.
    int getPin() const;
@@ -41,6 +41,9 @@ public:
 
    // This operation returns a flag indicating if the pin was successfully written.
    bool getSuccess() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = WRITE_PIN_REPLY;
 
 private:
 
@@ -60,7 +63,7 @@ private:
 inline WritePinReplyMsg::WritePinReplyMsg(
    const int& pinId,
    const int& value,
-   const bool& success) : Message(getMessageId())
+   const bool& success) : Message()
 {
    this->pinId = pinId;
    this->value = value;
@@ -71,9 +74,9 @@ inline WritePinReplyMsg::~WritePinReplyMsg()
 {
 }
 
-inline String WritePinReplyMsg::getMessageId()
+inline MessageId WritePinReplyMsg::getMessageId() const
 {
-   return ("WRITE_PIN_REPLY_MSG");
+   return (MESSAGE_ID);
 }
 
 inline int WritePinReplyMsg::getPin() const

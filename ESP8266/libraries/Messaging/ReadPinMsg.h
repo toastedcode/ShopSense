@@ -27,10 +27,13 @@ public:
    virtual ~ReadPinMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
 
    // This operation returns the pin that is to be read.
    int getPin() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = READ_PIN;
 
 private:
 
@@ -43,7 +46,7 @@ private:
 //                               Inline functions
 
 inline ReadPinMsg::ReadPinMsg(
-   const int& pinId) : Message(getMessageId())
+   const int& pinId) : Message()
 {
    this->pinId = pinId;
 }
@@ -52,9 +55,9 @@ inline ReadPinMsg::~ReadPinMsg()
 {
 }
 
-inline String ReadPinMsg::getMessageId()
+inline MessageId ReadPinMsg::getMessageId() const
 {
-   return ("READ_PIN_MSG");
+   return (MESSAGE_ID);
 }
 
 inline int ReadPinMsg::getPin() const

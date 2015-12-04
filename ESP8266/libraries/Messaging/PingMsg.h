@@ -1,6 +1,6 @@
 // *****************************************************************************
 // *****************************************************************************
-// SensorUpdateMsg.h
+// PingMsg.h
 //
 // Author: Jason Tost
 // Date:   10.29.2015
@@ -25,7 +25,9 @@ public:
    virtual ~PingMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
+
+   static const MessageId MESSAGE_ID = PING;
 
 private:
 
@@ -34,7 +36,7 @@ private:
 // *****************************************************************************
 //                               Inline functions
 
-inline PingMsg::PingMsg() : Message(getMessageId())
+inline PingMsg::PingMsg() : Message()
 {
 }
 
@@ -42,9 +44,9 @@ inline PingMsg::~PingMsg()
 {
 }
 
-inline String PingMsg::getMessageId()
+inline MessageId PingMsg::getMessageId() const
 {
-   return ("PING_MSG");
+   return (MESSAGE_ID);
 }
 
 #endif  // PINGMSG_H_INCLUDED

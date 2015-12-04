@@ -26,10 +26,13 @@ public:
    virtual ~PingReplyMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
 
    // This operation retrieves the IP address of the reply.
    String getIpAddress() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = PING_REPLY;
 
 private:
 
@@ -41,7 +44,7 @@ private:
 //                               Inline functions
 
 inline PingReplyMsg::PingReplyMsg(
-   const String& ipAddress) : Message(getMessageId())
+   const String& ipAddress) : Message()
 {
    this->ipAddress = ipAddress;
 }
@@ -50,9 +53,9 @@ inline PingReplyMsg::~PingReplyMsg()
 {
 }
 
-inline String PingReplyMsg::getMessageId()
+inline MessageId PingReplyMsg::getMessageId() const
 {
-   return ("PING_REPLY");
+   return (MESSAGE_ID);
 }
 
 inline String PingReplyMsg::getIpAddress() const

@@ -31,7 +31,7 @@ public:
    virtual ~ReadPinReplyMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
 
    // This operation returns the pin that is to be read.
    int getPin() const;
@@ -41,6 +41,9 @@ public:
 
    // This operation returns a flag indicating if the pin was successfully read.
    bool getSuccess() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = READ_PIN_REPLY;
 
 private:
 
@@ -60,7 +63,7 @@ private:
 inline ReadPinReplyMsg::ReadPinReplyMsg(
    const int& pinId,
    const int& value,
-   const bool& success) : Message(getMessageId())
+   const bool& success) : Message()
 {
    this->pinId = pinId;
    this->value = value;
@@ -71,9 +74,9 @@ inline ReadPinReplyMsg::~ReadPinReplyMsg()
 {
 }
 
-inline String ReadPinReplyMsg::getMessageId()
+inline MessageId ReadPinReplyMsg::getMessageId() const
 {
-   return ("READ_PIN_REPLY_MSG");
+   return (MESSAGE_ID);
 }
 
 inline int ReadPinReplyMsg::getPin() const

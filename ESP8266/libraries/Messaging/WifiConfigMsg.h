@@ -29,13 +29,16 @@ public:
    virtual ~WifiConfigMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
 
    // This operation returns the wifi SSID.
    String getSsid() const;
 
    // This operation returns the wifi password.
    String getPassword() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = WIFI_CONFIG;
 
 private:
 
@@ -51,7 +54,7 @@ private:
 
 inline WifiConfigMsg::WifiConfigMsg(
    const String& ssid,
-   const String& password) : Message(getMessageId())
+   const String& password) : Message()
 {
    this->ssid = ssid;
    this->password = password;
@@ -61,9 +64,9 @@ inline WifiConfigMsg::~WifiConfigMsg()
 {
 }
 
-inline String WifiConfigMsg::getMessageId()
+inline MessageId WifiConfigMsg::getMessageId() const
 {
-   return ("WIFI_CONFIG_MSG");
+   return (MESSAGE_ID);
 }
 
 inline String WifiConfigMsg::getSsid() const

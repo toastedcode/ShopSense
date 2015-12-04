@@ -25,7 +25,10 @@ public:
    virtual ~WifiConfigReplyMsg();
 
    // This operation returns the unique message id.
-   static String getMessageId();
+   virtual MessageId getMessageId() const;
+
+   // Unique message id.
+   static const MessageId MESSAGE_ID = WIFI_CONFIG_REPLY;
 
 private:
 
@@ -34,7 +37,7 @@ private:
 // *****************************************************************************
 //                               Inline functions
 
-inline WifiConfigReplyMsg::WifiConfigReplyMsg() : Message(getMessageId())
+inline WifiConfigReplyMsg::WifiConfigReplyMsg() : Message()
 {
 }
 
@@ -42,9 +45,9 @@ inline WifiConfigReplyMsg::~WifiConfigReplyMsg()
 {
 }
 
-inline String WifiConfigReplyMsg::getMessageId()
+inline MessageId WifiConfigReplyMsg::getMessageId() const
 {
-   return ("WIFI_CONFIG_REPLY_MSG");
+   return (MESSAGE_ID);
 }
 
 #endif  // WIFICONFIGREPLYMSG_H_INCLUDED

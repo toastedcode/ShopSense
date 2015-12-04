@@ -10,10 +10,10 @@
 
 #include "Message.h"
 
-Message::Message(
-   const String& messageId)
+Message::Message()
 {
-   this->messageId = messageId;
+   this->sourceId = "";
+   this->destinationId = "";
 }
 
 Message::~Message()

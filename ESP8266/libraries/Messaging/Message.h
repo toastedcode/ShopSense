@@ -12,6 +12,7 @@
 #define MESSAGE_H_INCLUDED
 
 #include "Arduino.h"
+#include "MessageId.h"
 
 // A unique identifier for the ESP8266 object.
 const String ESP8266_ID = "esp8266";
@@ -25,8 +26,7 @@ class Message
 public:
 
    // Constructor.
-   Message(
-      const String& messageId);
+   Message();
 
    // Destructor.
    virtual ~Message();
@@ -39,7 +39,7 @@ public:
       const String& destinationId);
 
    // This operation retrieves the message id.
-   String getMessageId() const;
+   virtual MessageId getMessageId() const = 0;
 
    // This operation retrieves the message id.
    String getSource() const;
@@ -48,9 +48,6 @@ public:
    String getDestination() const;
 
 private:
-
-   // The message id associated with this message.
-   String messageId;
 
    // The source of the message.
    String sourceId;
@@ -62,11 +59,6 @@ private:
 
 // *****************************************************************************
 //                               Inline functions
-
-inline String Message::getMessageId() const
-{
-   return (messageId);
-}
 
 inline String Message::getSource() const
 {

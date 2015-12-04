@@ -36,8 +36,19 @@ public:
 
 private:
 
-   // This operation parses out the specified parameter from a string.
-   bool getParameter(
+   // This operation parses out the targeted component, command, and parameters from a HTTP GET string.
+   static bool tokenizeMessage(
+      // The string to parse.
+      const String& string,
+      // The parsed component.
+      String& component,
+      // The parsed command.
+      String& command,
+      // The parsed parameter string.
+      String& parameters);
+
+   // This operation parses out the specified parameter from a HTTP GET string.
+   static bool getParameter(
       // The string to parse.
       const String& string,
       // The parameter name to search for.
@@ -45,7 +56,7 @@ private:
       // A flag indicating if the parameter should be optional.
       const bool& isOptional,
       // The parsed parameter.
-      String& parameter) const;
+      String& parameter);
 
    // This operation adds standard HTTP headers to the supplied content to form a complete HTTP reply.
    static String httpReply(
