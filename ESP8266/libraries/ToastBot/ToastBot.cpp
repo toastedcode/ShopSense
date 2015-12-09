@@ -81,6 +81,11 @@ bool ToastBot::handleMessage(
       if (ssid != "")
       {
          Esp8266::getInstance()->connectWifi(ssid, password);
+
+         if (Esp8266::getInstance()->isConnected())
+         {
+            Esp8266::getInstance()->stopAccessPoint();
+         }
       }
    }
    /*

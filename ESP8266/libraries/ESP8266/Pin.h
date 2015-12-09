@@ -34,7 +34,7 @@ public:
    int write(
       // The value to write.
       const int& value);
-   
+
 private:
    
    // The GPIO pin represented by this class.

@@ -58,6 +58,10 @@ public:
       // The password to use in connecting.
       const String& password);
 
+   // This operation stops any currently started Wifi access point.
+   // True is returned if the operation was successful; false otherwise.
+   bool stopAccessPoint();
+
    // Retrieves a pointer to the specified Pin object.
    Pin* getPin(
       const int& pinId) const;

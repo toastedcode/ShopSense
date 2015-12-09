@@ -11,9 +11,10 @@
 #ifndef VIBRATIONSENSOR_H_INCLUDED
 #define VIBRATIONSENSOR_H_INCLUDED
 
-#include "Sensor.h"
+#include "Component.h"
+#include "Timer.h"
 
-class VibrationSensor : public Sensor
+class VibrationSensor : public Component
 {
 
 public:
@@ -38,15 +39,47 @@ public:
    virtual bool handleMessage(
       // The message to handle.
       const Message& message);
-   
+
 private:
 
-   // A count of sensor pollings, per update cycle.
-   int pollCount;
+   const int DEFAULT_SENSITIVITY = 100;
 
-   // A count of measured vibrations, per update cycle.
+   const int DEFAULT_RESPONSIVENESS = 5;
+
+   const int INTERVAL_TIME = 500;  // milliseconds
+
+   static const int NUM_INTERVALS = 10;
+
+   static const int VIBRATING = 1;
+
+   static const int NOT_VIBRATING = 0;
+
+   // The GPIO pin attached to the vibration sensor.
+   int pinId;
+
+   // A multiplier used in adjusting how sensitive the sensor is to vibrations.
+   int sensitivity;
+
+   // A multiplier used in adjusting quickly the sensor reacts to changes in vibration.
+   int responsiveness;
+
+   // A timer used in periodically tallying the number of recorded vibrations.
+   Timer intervalTimer;
+
+   // A circular queue, recording the vibrating state over a number of time intervals.
+   int queue[NUM_INTERVALS];
+
+   // The current position in the circular queue.
+   int queuePosition = 0;
+
+   // The current overall state of the sensor.
+   int state = NOT_VIBRATING;
+
+   // The current reading of the GPIO pin.
+   int reading = LOW;
+
+   // A running count of the number of vibrations detected for the current interval.
    int vibrationCount = 0;
-
 };
 
 #endif  // VIBRATIONSENSOR_H_INCLUDED

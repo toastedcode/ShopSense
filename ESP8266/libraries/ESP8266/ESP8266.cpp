@@ -123,6 +123,17 @@ bool Esp8266::startAccessPoint(
 
    WiFi.mode(WIFI_AP);
    WiFi.softAP(ssid.c_str(), password.c_str());
+
+   return (isConnected());
+}
+
+bool Esp8266::stopAccessPoint()
+{
+   Logger::logDebug("Stopping wireless network " + String(WiFi.SSID()));
+
+   WiFi.softAPdisconnect();
+
+   return (!isConnected());
 }
 
 void Esp8266::reset()

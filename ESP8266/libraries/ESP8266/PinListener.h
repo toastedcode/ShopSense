@@ -1,31 +1,18 @@
 // *****************************************************************************
 // *****************************************************************************
-// Sensor.cpp
+// PinListener.h
 //
 // Author: Jason Tost
-// Date:   10.29.2015
+// Date:   12.9.2015
 //
 // *****************************************************************************
 // *****************************************************************************
 
-#include "Logger.h"
-#include "Sensor.h"
-
-Sensor::Sensor(
-   const String& id,
-   const int& pinId) : MessageHandler(id)
+class PinListener
 {
-    this->pinId = pinId;
-}
+   void onHigh() = 0;
 
-Sensor::~Sensor()
-{
-}
+   void onLow() = 0;
 
-bool Sensor::handleMessage(
-   const Message& message)
-{
-   bool handled = false;
-
-   return (handled);
-}
+   void onChange() = 0;
+};
