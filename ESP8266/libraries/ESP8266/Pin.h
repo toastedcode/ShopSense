@@ -27,11 +27,21 @@ public:
    // This operation returns the pin id of the GPIO pin represented by this object.
    int getPinId() const;
 
+   // This operation sets the mode of a GPIO pin.
+   void setMode(
+      // The new pin mode.
+      const int& mode);
+
    // This operation reads from the sensor pin and returns the current value.   
    int read();
    
-   // This operation writes the specified value to the sensor pin.
-   int write(
+   // This operation writes the specified analog value to the PWM pin.
+   void analogWrite(
+      // The value to write.
+      const int& value);
+
+   // This operation writes the specified digital value to the pin.
+   void digitalWrite(
       // The value to write.
       const int& value);
 

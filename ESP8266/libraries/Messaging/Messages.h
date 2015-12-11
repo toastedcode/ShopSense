@@ -11,6 +11,8 @@
 #ifndef MESSAGES_H_INCLUDED
 #define MESSAGES_H_INCLUDED
 
+#include "MotorConfigMsg.h"
+#include "MotorConfigReplyMsg.h"
 #include "PingMsg.h"
 #include "PingReplyMsg.h"
 #include "ReadPinMsg.h"

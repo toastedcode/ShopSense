@@ -8,6 +8,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#include <Arduino.h>
 #include "Pin.h"
 
 Pin::Pin(
@@ -15,16 +16,26 @@ Pin::Pin(
 {
    this->pinId = pinId;
 }
-  
+
+void Pin::setMode(
+   const int& mode)
+{
+   pinMode(pinId, mode);
+}
+
 int Pin::read()
 {
-   pinMode(pinId, INPUT);
    return (digitalRead(pinId));
 }
-   
-int Pin::write(
+
+void Pin::analogWrite(
    const int& value)
 {
-   pinMode(pinId, OUTPUT);
-   digitalWrite(pinId, value);
+   ::analogWrite(pinId, value);
+}
+
+void Pin::digitalWrite(
+   const int& value)
+{
+   ::digitalWrite(pinId, value);
 }

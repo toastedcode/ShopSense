@@ -21,6 +21,7 @@ static const String READ_PIN_REPLY_HTML = "<html><body><div>(%s) Read pin %d, va
 static const String WRITE_PIN_REPLY_HTML = "<html><body><div>(%s) Write pin %d, value = %d</div></body></html>";
 static const String WIFI_CONFIG_REPLY_HTML = "<html><b>Wifi Setup</b></p><form method=\"get\" action=\"#\"><input type=\"hidden\" name=\"command\" value=\"wifi_config\"/><table><tr><td>SSID:</td><td><input type=\"text\" name=\"ssid\"/></td></tr><tr><td>Password:</td><td><input type=\"password\" name=\"password\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
 static const String VIBRATION_SENSOR_CONFIG_REPLY_HTML = "<html><b>Vibration Sensor Config</b></p><form method=\"get\" action=\"#\"><input type=\"hidden\" name=\"command\" value=\"vibration_sensor_config\"/><table><tr><td>Sensor id:</td><td><input type=\"text\" name=\"sensor_id\" value=\"%s\"/></td></tr><tr><td>Server IP:</td><td><input type=\"text\" name=\"server_ip\" value=\"%s\"/></td></tr><tr><td>Sensitivity:</td><td><input type=\"range\" name=\"sensitivity\" min=\"0\" max=\"254 value=\"%d\"></td></tr><tr><td>Responsiveness:</td><td><input type=\"range\" name=\"responsiveness\" min=\"0\" max=\"254\" value=\"%d\"><td></tr><tr><td>Enabled:</td><td><input type=\"checkbox\" name=\"enabled\" value=\"%s\" checked></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
+static const String MOTOR_CONFIG_REPLY_HTML = "<html><b>Motor Config</b></p><form method=\"get\" action=\"#\"><table><tr><td>Speed:</td><td><input type=\"range\" name=\"speed\" min=\"-255\" max=\"255\" value=\"%d\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"/></td></tr></table></form></html>";
 
 bool HttpProtocol::parse(
    const String& string,
@@ -44,14 +45,14 @@ bool HttpProtocol::parse(
       Logger::logDebug("Parameters: " + parameters + "\n");
 
       // PING_MSG
-      // Format: command=ping
+      // Format: ping
       if (command == "ping")
       {
          message = new PingMsg();
          parsed = true;
       }
       // READ_PIN_MSG
-      // Format: command=read&pin=<pin id>
+      // Format: read?pin=<pin id>
       else if (command == "read")
       {
          String pinId = "";
@@ -67,7 +68,7 @@ bool HttpProtocol::parse(
          }
       }
       // WRITE_PIN_MSG
-      // Format: command=write&pin=<pin id>&value=<value>
+      // Format: write?pin=<pin id>&value=<value>
       else if (command == "write")
       {
          String pinId = "";
@@ -85,7 +86,7 @@ bool HttpProtocol::parse(
          }
       }
       // WIFI_CONFIG
-      // Format: command=wifi_config&ssid=<ssid>&password=<password>
+      // Format: wifi_config?ssid=<ssid>&password=<password>
       else if (command == "wifi_config")
       {
          String ssid = "";
@@ -103,7 +104,7 @@ bool HttpProtocol::parse(
          }
       }
       // VIBRATION_SENSOR_CONFIG
-      // Format: command=vibration_sensor_config&server_ip=&sensitivity=&responsiveness=&update_rate=&is_enabled=
+      // Format: vibration_sensor_config?server_ip=&sensitivity=&responsiveness=&update_rate=&is_enabled=
       else if (command == "vibration_sensor_config")
       {
          String sensorId = "";
@@ -124,6 +125,22 @@ bool HttpProtocol::parse(
                                                    sensitivity.toInt(),
                                                    responsiveness.toInt(),
                                                    ((isEnabled == "true") ? true : false));
+            parsed = true;
+         }
+         else
+         {
+            Logger::logDebug("Bad message format: \"" + string + "\".\n");
+         }
+      }
+      // MOTOR_CONFIG
+      // Format: motor_config?speed=
+      else if (command == "motor_config")
+      {
+         String speed = "";
+
+         if (getParameter(string, "speed", REQUIRED, speed))
+         {
+            message = new MotorConfigMsg(speed.toInt());
             parsed = true;
          }
          else
@@ -279,6 +296,27 @@ bool HttpProtocol::serialize(
                  castMessage->getSensitivity(),
                  castMessage->getResponsiveness(),
                  castMessage->getSuccess());
+
+         string = httpReply(String(buffer));
+
+         serialized = true;
+      }
+   }
+   // MOTOR_CONFIG_REPLY
+   else if (messageId == MotorConfigReplyMsg::MESSAGE_ID)
+   {
+      const MotorConfigReplyMsg* castMessage = static_cast<const MotorConfigReplyMsg*>(&message);
+
+      if (castMessage == 0)
+      {
+         Logger::logDebug("Invalid message: \"" + toString(message.getMessageId()) + "\".\n");
+      }
+      else
+      {
+         char buffer[1024];
+         sprintf(buffer,
+                 MOTOR_CONFIG_REPLY_HTML.c_str(),
+                 castMessage->getSpeed());
 
          string = httpReply(String(buffer));
 

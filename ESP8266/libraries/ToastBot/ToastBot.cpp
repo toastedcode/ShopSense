@@ -129,7 +129,7 @@ bool ToastBot::handleMessage(
 
       if (pin)
       {
-         pin->write(castMessage->getValue());
+         pin->digitalWrite(castMessage->getValue());
          success = true;
       }
 
