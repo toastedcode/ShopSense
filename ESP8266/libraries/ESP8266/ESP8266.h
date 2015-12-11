@@ -108,7 +108,14 @@ inline bool Esp8266::isConnected() const
 inline Pin* Esp8266::getPin(
    const int& pinId) const
 {
-   return (pins[pinId - 1]);
+   Pin* pin = 0;
+
+   if (pinId < MAX_NUM_PINS)
+   {
+      pin = pins[pinId - 1];
+   }
+
+   return (pin);
 }
 
 #endif  // ESP8266_H_INCLUDED

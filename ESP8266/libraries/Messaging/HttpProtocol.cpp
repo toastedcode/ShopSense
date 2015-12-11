@@ -338,7 +338,8 @@ bool HttpProtocol::tokenizeMessage(
    String& parameters)
 {
    const int MAX_NUM_TOKENS = 3;
-   const String SEPERATOR = "/";
+   const String FORWARD_SLASH = "/";
+   const String SEPERATORS = "/? ";
    const String PARAM_START = "?";
    const String GET = "GET";
    const String HTTP = "HTTP";
@@ -347,10 +348,10 @@ bool HttpProtocol::tokenizeMessage(
 
    // Format:
    //
-   // GET /<component>/<command>/?<params> HTTP/1.1
-   // GET /<component>/<command>
-   // GET /<command>/?<params>
-   // GET /<command>
+   // GET /<component>/<command>?<params> HTTP/1.1
+   // GET /<component>/<command> HTTP/1.1
+   // GET /<command>?<params> HTTP/1.1
+   // GET /<command> HTTP/1.1
 
    String remainingString = string;
 
@@ -358,7 +359,7 @@ bool HttpProtocol::tokenizeMessage(
    int foundPos = remainingString.indexOf(GET);
    if (foundPos != -1)
    {
-      int startPos = remainingString.indexOf(SEPERATOR, foundPos);
+      int startPos = remainingString.indexOf(FORWARD_SLASH, foundPos);
       remainingString = remainingString.substring(startPos);
    }
 
@@ -373,12 +374,14 @@ bool HttpProtocol::tokenizeMessage(
 
    String tokens[MAX_NUM_TOKENS] = {"", "", ""};
 
+   Logger::logDebug("Remaining: " + remainingString + "/n");
+
    int i = 0;
-   tokens[i] = Utility::tokenize(remainingString, SEPERATOR);
+   tokens[i] = Utility::tokenize(remainingString, SEPERATORS);
    Logger::logDebug("Tokens = " + tokens[i] + ", ");
    while (remainingString.length() > 0)
    {
-      String token =  Utility::tokenize(remainingString, SEPERATOR);
+      String token =  Utility::tokenize(remainingString, SEPERATORS);
 
       i++;
       if (i < MAX_NUM_TOKENS)
@@ -392,13 +395,13 @@ bool HttpProtocol::tokenizeMessage(
    int tokenCount = (i + 1);
    Logger::logDebug("Token count = " + String(tokenCount) + "\n");
 
-   bool hasParams = (Utility::findFirstOf(tokens[tokenCount - 1], PARAM_START) != -1);
+   bool hasParams = (Utility::findFirstOf(string, PARAM_START) != -1);
 
    switch (tokenCount)
    {
       case 1:
       {
-         // GET /<command>
+         // GET /<command> HTTP/1.1
          component = "";
          command = tokens[0];
          parameters = "";
@@ -407,14 +410,14 @@ bool HttpProtocol::tokenizeMessage(
 
       case 2:
       {
-         // GET /<command>/?<params>
+         // GET /<command>?<params> HTTP/1.1
          if (hasParams)
          {
             component = "";
             command = tokens[0];
             parameters = tokens[1];
          }
-         // GET /<component>/<command>
+         // GET /<component>/<command> HTTP/1.1
          else
          {
             component = tokens[0];
@@ -425,7 +428,7 @@ bool HttpProtocol::tokenizeMessage(
 
       case 3:
       {
-         // GET /<component>/<command>/?<params>
+         // GET /<component>/<command>?<params> HTTP/1.1
          component = tokens[0];
          command = tokens[1];
          parameters = tokens[2];
