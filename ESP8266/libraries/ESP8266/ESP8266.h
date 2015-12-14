@@ -70,7 +70,7 @@ public:
    void reset();
 
    // A constant specifying the number of GPIO pins available on the ESP8266.
-   static const int MAX_NUM_PINS = 12;
+   static const int MAX_NUM_PINS = 16;
 
 private:
 

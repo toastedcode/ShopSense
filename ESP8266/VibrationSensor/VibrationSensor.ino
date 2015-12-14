@@ -13,6 +13,7 @@
 #include <ESP8266WiFi.h>
 #include <Logger.h>
 #include <MessageHandler.h>
+#include <MessageRouter.h>
 #include <Timer.h>
 #include <ToastBot.h>
 #include <Utility.h>
@@ -22,7 +23,7 @@
 //                               Global variables
 // *****************************************************************************
 
-VibrationSensor sensor("VIBRATION_SENSOR", 2);
+VibrationSensor sensor("VIBRATION_SENSOR", 14);
 
 // *****************************************************************************
 //                               Arduino functions
@@ -35,6 +36,8 @@ void setup()
   ToastBot::getInstance()->begin();
 
   sensor.setup();
+
+  MessageRouter::getInstance()->registerHandler(sensor);
 }
 
 void loop()

@@ -30,6 +30,12 @@ VibrationSensor::VibrationSensor(
    {
      queue[i] = NOT_VIBRATING;
    }
+
+   Pin* pin = Esp8266::getInstance()->getPin(pinId);
+   if (pin)
+   {
+      pin->setMode(INPUT);
+   }
 }
 
 VibrationSensor::~VibrationSensor()
@@ -46,9 +52,13 @@ void VibrationSensor::run()
 {
    // Take a reading.
    int lastReading = reading;
-   reading = Esp8266::getInstance()->getPin(pinId)->read();
+   Pin* pin = Esp8266::getInstance()->getPin(pinId);
+   if (pin)
+   {
+      reading = pin->read();
+   }
 
-   // Each change shall be reorded as a discrete vibration.
+   // Each change shall be recorded as a discrete vibration.
    if (reading != lastReading)
    {
       vibrationCount++;
@@ -90,6 +100,7 @@ void VibrationSensor::run()
          message.address(getId(), SERVER_ID);
          MessageRouter::getInstance()->sendMessage(message);
          */
+         Logger::logDebug("State = " + String(state) + "\n");
       }
 
       // Reset for the next interval.
