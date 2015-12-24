@@ -196,6 +196,12 @@ void MessageRouter::handleMessages(
       {
          // Allow the handler to handle the message.
          handledMessage = handler->handleMessage(*message);
+
+         if (!handledMessage)
+         {
+            Logger::logDebug("Component \"" + handler->getId() + "\" failed to handle message " +
+                             toString(message->getMessageId()) + ". Unsupported message.\n");
+         }
       }
 
       // Free up the memory from the handled message.

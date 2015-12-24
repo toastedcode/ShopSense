@@ -39,7 +39,7 @@ bool WebClientAdapter::sendMessage(
        (protocol->serialize(message, serializedMessage) == true))
    {
       // Format for HTTP GET request.
-      serializedMessage = "GET /shopSense.php?" + serializedMessage + " HTTP/1.0";
+      serializedMessage = "GET " + serializedMessage + " HTTP/1.0";
 
       // Connect to the server.
       if (client.connect(serverAddress.c_str(), HTTP_PORT) == false)
@@ -52,10 +52,17 @@ bool WebClientAdapter::sendMessage(
 
          // Make the request.
          client.println(serializedMessage);
-         client.println("HOST: roboxes.com");
+         client.println("HOST: dweet.io");
          client.println();
 
          messageSent = true;
+
+         // Wait for data.
+         while ((client.connected()) &&
+                (!client.available()))
+         {
+            delay(1);
+         }
 
          // Read all the lines of the reply from server.
          // TODO: Turn this into a message.

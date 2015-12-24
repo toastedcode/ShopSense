@@ -16,6 +16,8 @@
 #include "SensorUpdateMsg.h"
 #include "VibrationSensor.h"
 
+const int MILLISECONDS_PER_SECOND = 1000;
+
 VibrationSensor::VibrationSensor(
    const String& id,
    const int& pinId) : Component(id)
@@ -36,6 +38,8 @@ VibrationSensor::VibrationSensor(
    {
       pin->setMode(INPUT);
    }
+
+   stateChangeTime = millis();
 }
 
 VibrationSensor::~VibrationSensor()
@@ -46,6 +50,9 @@ void VibrationSensor::setup()
 {
    intervalTimer.setDelay(INTERVAL_TIME);
    intervalTimer.start();
+
+   updateTimer.setDelay(UPDATE_TIME);
+   updateTimer.start();
 }
 
 void VibrationSensor::run()
@@ -64,6 +71,19 @@ void VibrationSensor::run()
       vibrationCount++;
    }
 
+   if (updateTimer.isExpired())
+   {
+      // Send an update to the server.
+      if (serverId != "")
+      {
+         SensorUpdateMsg message(getId(), state, ((millis() - stateChangeTime) / MILLISECONDS_PER_SECOND));
+         message.address(getId(), serverId);
+         MessageRouter::getInstance()->sendMessage(message);
+      }
+
+      updateTimer.start();
+   }
+
    if (intervalTimer.isExpired())
    {
       // Increment the position in the circular queue.
@@ -75,7 +95,7 @@ void VibrationSensor::run()
       }
 
       // Record the vibrating state for this interval.
-      // TODO: Use senstivity value.
+      // TODO: Use sensitivity value.
       queue[queuePosition] = (vibrationCount > 0) ? VIBRATING : NOT_VIBRATING;
 
       // Calculate the overall vibrating state.
@@ -95,12 +115,15 @@ void VibrationSensor::run()
          //digitalWrite(ledPin, state);
 
          // Send an update to the server.
-         /*
-         SensorUpdateMsg message(getId(), currentReading);
-         message.address(getId(), SERVER_ID);
-         MessageRouter::getInstance()->sendMessage(message);
-         */
-         Logger::logDebug("State = " + String(state) + "\n");
+         if (serverId != "")
+         {
+            SensorUpdateMsg message(getId(), state, 0);
+            message.address(getId(), serverId);
+            MessageRouter::getInstance()->sendMessage(message);
+         }
+
+         // Record the state change time.
+         stateChangeTime = millis();
       }
 
       // Reset for the next interval.
@@ -126,7 +149,7 @@ bool VibrationSensor::handleMessage(
       // sensorId
       if (castMessage->getSensorId() != "")
       {
-         // TODO
+         setId(castMessage->getSensorId());
       }
 
       // serverIpAddress
@@ -144,7 +167,7 @@ bool VibrationSensor::handleMessage(
       // responsiveness
       if (castMessage->getResponsiveness() != 0)
       {
-         sensitivity = castMessage->getSensitivity();
+         responsiveness = castMessage->getSensitivity();
       }
 
       // isEnabled

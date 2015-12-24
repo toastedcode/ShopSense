@@ -40,6 +40,11 @@ public:
       // The message to handle.
       const Message& message);
 
+   // This operation sets the server id that will be used in making updates to an IoT server.
+   void setServerId(
+      // The server id.
+      const String& serverId);
+
 private:
 
    const int DEFAULT_SENSITIVITY = 100;
@@ -48,11 +53,16 @@ private:
 
    const int INTERVAL_TIME = 500;  // milliseconds
 
+   const int UPDATE_TIME = 10000;  // milliseconds
+
    static const int NUM_INTERVALS = 10;
 
    static const int VIBRATING = 1;
 
    static const int NOT_VIBRATING = 0;
+
+   // The adapter id used in sending updates to a IOT server.
+   String serverId;
 
    // The GPIO pin attached to the vibration sensor.
    int pinId;
@@ -65,6 +75,9 @@ private:
 
    // A timer used in periodically tallying the number of recorded vibrations.
    Timer intervalTimer;
+
+   // A timer used in periodically updating the server with the current sensor state.
+   Timer updateTimer;
 
    // A circular queue, recording the vibrating state over a number of time intervals.
    int queue[NUM_INTERVALS];
@@ -80,6 +93,16 @@ private:
 
    // A running count of the number of vibrations detected for the current interval.
    int vibrationCount = 0;
+
+   // A time (in milliseconds) indicating the time that the sensor last changed its state.
+   // Used in computing how long the sensor has been in the VIBRATING/NOT_VIBRATING state.
+   int stateChangeTime = 0;
 };
+
+inline void VibrationSensor::setServerId(
+   const String& serverId)
+{
+   this->serverId = serverId;
+}
 
 #endif  // VIBRATIONSENSOR_H_INCLUDED

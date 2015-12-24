@@ -36,6 +36,12 @@ public:
       // The message to handle.
       const Message& message) = 0;
 
+protected:
+
+   // This operation sets the unique id for the handler.
+   void setId(
+      const String& id);
+
 private:
 
    // A unique identifier for the handler.
@@ -59,6 +65,12 @@ inline MessageHandler::~MessageHandler()
 inline String MessageHandler::getId()
 {
    return (id);
+}
+
+inline void MessageHandler::setId(
+   const String& id)
+{
+   this->id = id;
 }
 
 

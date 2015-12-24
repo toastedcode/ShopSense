@@ -21,6 +21,12 @@ public:
    // Constructor.
    SensorUpdateMsg(
       const String& sensorId,
+      const int& sensorReading,
+      const int& sensorReadingTime);
+
+   // Constructor.
+   SensorUpdateMsg(
+      const String& sensorId,
       const int& sensorReading);
 
    // Destructor.
@@ -35,6 +41,9 @@ public:
    // This operation returns the sensor reading being reported.
    int getSensorReading() const;
 
+   // This operation returns the sensor reading time being reported.
+   int getSensorReadingTime() const;
+
    // Unique message id.
    static const MessageId MESSAGE_ID = SENSOR_UPDATE;
 
@@ -46,6 +55,9 @@ private:
    // The sensor reading being reported.
    int sensorReading;
 
+   // The time that the sensor has been in the reported state.
+   int sensorReadingTime;
+
 };
 
 // *****************************************************************************
@@ -53,10 +65,19 @@ private:
 
 inline SensorUpdateMsg::SensorUpdateMsg(
    const String& sensorId,
-   const int& sensorReading) : Message()
+   const int& sensorReading,
+   const int& sensorReadingTime) : Message()
 {
    this->sensorId = sensorId;
    this->sensorReading = sensorReading;
+   this->sensorReadingTime = sensorReadingTime;
+}
+
+inline SensorUpdateMsg::SensorUpdateMsg(
+   const String& sensorId,
+   const int& sensorReading) : SensorUpdateMsg(sensorId, sensorReading, 0)
+{
+   // Nothing to do here.
 }
 
 inline SensorUpdateMsg::~SensorUpdateMsg()
@@ -76,6 +97,11 @@ inline String SensorUpdateMsg::getSensorId() const
 inline int SensorUpdateMsg::getSensorReading() const
 {
    return (sensorReading);
+}
+
+inline int SensorUpdateMsg::getSensorReadingTime() const
+{
+   return (sensorReadingTime);
 }
 
 #endif  // SENSORUPDATEMSG_H_INCLUDED

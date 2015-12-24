@@ -8,7 +8,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#include <WebServerAdapter.h>
+#include <DweetProtocol.h>
 #include <ESP8266.h>
 #include <ESP8266WiFi.h>
 #include <Logger.h>
@@ -18,12 +18,20 @@
 #include <ToastBot.h>
 #include <Utility.h>
 #include <VibrationSensor.h>
+#include <WebClientAdapter.h>
+#include <WebServerAdapter.h>
 
 // *****************************************************************************
 //                               Global variables
 // *****************************************************************************
 
-VibrationSensor sensor("VIBRATION_SENSOR", 14);
+const String DWEET_SERVER_ADDRESS = "dweet.io";
+
+VibrationSensor sensor("pptp_machine01_vibration", 14);
+
+DweetProtocol dweetProtocol;
+
+WebClientAdapter dweetAdapter(DWEET_SERVER_ADDRESS);
 
 // *****************************************************************************
 //                               Arduino functions
@@ -37,7 +45,13 @@ void setup()
 
   sensor.setup();
 
+  sensor.setServerId(DWEET_SERVER_ADDRESS);
+
   MessageRouter::getInstance()->registerHandler(sensor);
+
+  dweetAdapter.setProtocol(dweetProtocol);
+  dweetAdapter.setServerAddress(DWEET_SERVER_ADDRESS);
+  MessageRouter::getInstance()->registerAdapter(dweetAdapter);
 }
 
 void loop()
