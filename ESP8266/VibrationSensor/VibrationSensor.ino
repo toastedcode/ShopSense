@@ -18,6 +18,7 @@
 #include <ToastBot.h>
 #include <Utility.h>
 #include <VibrationSensor.h>
+#include <VibrationSensor2.h>
 #include <WebClientAdapter.h>
 #include <WebServerAdapter.h>
 
@@ -27,7 +28,7 @@
 
 const String DWEET_SERVER_ADDRESS = "dweet.io";
 
-VibrationSensor sensor("pptp_machine01_vibration", 14);
+VibrationSensor2 sensor("pptp_machine01_vibration", 14);
 
 DweetProtocol dweetProtocol;
 
