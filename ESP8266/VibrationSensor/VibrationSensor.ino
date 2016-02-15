@@ -14,6 +14,9 @@
 #include <Logger.h>
 #include <MessageHandler.h>
 #include <MessageRouter.h>
+#include <MqttAdapter.h>
+#include <PubSubClient.h>
+#include <QueueList.h>
 #include <Timer.h>
 #include <ToastBot.h>
 #include <Utility.h>
@@ -27,12 +30,14 @@
 // *****************************************************************************
 
 const String DWEET_SERVER_ADDRESS = "dweet.io";
+const String MQTT_SERVER_ADDRESS = "test.mosquitto.org";
 
 VibrationSensor2 sensor("pptp_machine01_vibration", 14);
 
 DweetProtocol dweetProtocol;
 
-WebClientAdapter dweetAdapter(DWEET_SERVER_ADDRESS);
+//WebClientAdapter dweetAdapter(DWEET_SERVER_ADDRESS);
+MqttAdapter mqttAdapter(MQTT_SERVER_ADDRESS);
 
 // *****************************************************************************
 //                               Arduino functions
@@ -50,9 +55,14 @@ void setup()
 
   MessageRouter::getInstance()->registerHandler(sensor);
 
-  dweetAdapter.setProtocol(dweetProtocol);
-  dweetAdapter.setServerAddress(DWEET_SERVER_ADDRESS);
-  MessageRouter::getInstance()->registerAdapter(dweetAdapter);
+  //dweetAdapter.setProtocol(dweetProtocol);
+  //dweetAdapter.setServerAddress(DWEET_SERVER_ADDRESS);
+  //MessageRouter::getInstance()->registerAdapter(dweetAdapter);
+
+  mqttAdapter.setProtocol(dweetProtocol);  // TODO
+  mqttAdapter.setServerAddress(MQTT_SERVER_ADDRESS);
+  mqttAdapter.setPublishTopic(sensor.getId());
+  MessageRouter::getInstance()->registerAdapter(mqttAdapter);
 }
 
 void loop()
