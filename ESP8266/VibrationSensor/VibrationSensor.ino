@@ -8,9 +8,11 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#include <ArduinoJson.h>
 #include <DweetProtocol.h>
 #include <ESP8266.h>
 #include <ESP8266WiFi.h>
+#include <JsonProtocol.h>
 #include <Logger.h>
 #include <MessageHandler.h>
 #include <MessageRouter.h>
@@ -35,7 +37,9 @@ const String MQTT_SERVER_ADDRESS = "test.mosquitto.org";
 
 VibrationSensor2 sensor("pptp_machine01_vibration", 14);
 
-DweetProtocol dweetProtocol;
+//DweetProtocol dweetProtocol;
+
+JsonProtocol jsonProtcol;
 
 //WebClientAdapter dweetAdapter(DWEET_SERVER_ADDRESS);
 MqttAdapter mqttAdapter(MQTT_SERVER_ADDRESS);
@@ -52,7 +56,8 @@ void setup()
 
   sensor.setup();
 
-  sensor.setServerId(DWEET_SERVER_ADDRESS);
+  //sensor.setServerId(DWEET_SERVER_ADDRESS);
+  sensor.setServerId(MQTT_SERVER_ADDRESS);
 
   MessageRouter::getInstance()->registerHandler(sensor);
 
@@ -60,9 +65,9 @@ void setup()
   //dweetAdapter.setServerAddress(DWEET_SERVER_ADDRESS);
   //MessageRouter::getInstance()->registerAdapter(dweetAdapter);
 
-  mqttAdapter.setProtocol(dweetProtocol);  // TODO
-  mqttAdapter.setServerAddress(MQTT_SERVER_ADDRESS);
-  mqttAdapter.setPublishTopic(sensor.getId());
+  mqttAdapter.setProtocol(jsonProtcol);
+  mqttAdapter.setServerAddress(MQTT_SERVER_ADDRESS, 1883);
+  mqttAdapter.setPublishTopic("pittsburghprecision.com/sensors/");
   MessageRouter::getInstance()->registerAdapter(mqttAdapter);
 }
 

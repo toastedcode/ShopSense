@@ -32,7 +32,8 @@ public:
 
    // This operation sets the server address.
    void setServerAddress(
-      const String& serverAddress);
+      const String& serverAddress,
+      const unsigned int& port);
 
    // This operation sets the publish topic.
    void setPublishTopic(
@@ -78,8 +79,11 @@ private:
    // A MQTT client object for connecting to a MQTT broker.
    static PubSubClient mqttClient;
 
-   // The address of the web server used for sending messages.
+   // The address of the MQTT server.
    String serverAddress;
+
+   // The port used in connecting to the MQTT server.
+   unsigned int port;
 
    // The topic used in MQTT publish commands.
    String publishTopic;
@@ -92,9 +96,11 @@ private:
 //                               Inline functions
 
 inline void MqttAdapter::setServerAddress(
-   const String& serverAddress)
+   const String& serverAddress,
+   const unsigned int& port)
 {
    this->serverAddress = serverAddress;
+   this->port = port;
 }
 
 inline void MqttAdapter::setPublishTopic(

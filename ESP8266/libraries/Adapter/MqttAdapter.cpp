@@ -21,13 +21,8 @@ typedef void (*MqttCallbackFunction)(char*, unsigned char*, unsigned int);
 MqttAdapter::MqttAdapter(
    const String& id) : Adapter(id)
 {
-   serverAddress = "";
-
    // TODO: Have to solve this.  Can't pass member function as parameter.
    //mqttClient.setCallback(callback);
-
-   // Attempt our first connection to the broker.
-   connect();
 }
 
 MqttAdapter::~MqttAdapter()
@@ -48,10 +43,19 @@ bool MqttAdapter::sendMessage(
       {
          // Construct the topic.
          // Ex. mycompany.com/sensors/vibration_01/reading
-         String topic = publishTopic + "/" + message.getSource() + "/" + toString(message.getMessageId());
+         String topic = publishTopic + message.getSource() + "/" + toString(message.getMessageId());
+
+         Logger::logDebug("Publishing: " + topic + "/" + serializedMessage + "\n");
 
          // Publish to the MQTT broker.
-         mqttClient.publish(publishTopic.c_str(), serializedMessage.c_str());
+         if (mqttClient.publish(topic.c_str(), serializedMessage.c_str()))
+         {
+            messageSent = true;
+         }
+         else
+         {
+            Logger::logDebug("Failed to publish.\n");
+         }
       }
       else
       {
@@ -70,11 +74,15 @@ const Message* MqttAdapter::getMessage()
 {
    Message* message = 0;
 
+   /*
    // Let the MQTT client listen for connections and fill the message queue.
    mqttClient.loop();
 
    // Return the top message, if one exists.
    return (messageQueue.pop());
+   */
+
+   return (message);
 }
 
 
@@ -82,7 +90,9 @@ bool MqttAdapter::connect()
 {
   if (!mqttClient.connected())
   {
-     Logger::logDebug("Attempting MQTT connection ... ");
+     Logger::logDebug("Attempting MQTT connection to " + serverAddress + ":" + String(port) + " ... ");
+
+     mqttClient.setServer(serverAddress.c_str(), port);
 
      if (mqttClient.connect("MQTTClient"))  // TODO Configured client handle.
      {
