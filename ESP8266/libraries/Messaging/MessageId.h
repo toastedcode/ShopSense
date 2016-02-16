@@ -26,10 +26,11 @@ enum MessageId
    SENSOR_UPDATE,
    SET_UPDATE_RATE,
    MOTOR_CONFIG,
-   MOTOR_CONFIG_REPLY
+   MOTOR_CONFIG_REPLY,
+   SET_LOGGING,
 };
 
-static const String MESSAGE_ID_STRINGS[]
+const String MESSAGE_ID_STRINGS[]
 {
    "PING",
    "PING_REPLY",
@@ -44,7 +45,8 @@ static const String MESSAGE_ID_STRINGS[]
    "SENSOR_UPDATE",
    "SET_UPDATE_RATE",
    "MOTOR_CONFIG",
-   "MOTOR_CONFIG_REPLY"
+   "MOTOR_CONFIG_REPLY",
+   "SET_LOGGING"
 };
 
 inline String toString(

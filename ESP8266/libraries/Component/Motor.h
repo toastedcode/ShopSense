@@ -53,7 +53,7 @@ public:
 
    static const int MIN_SPEED = 0;
 
-   static const int MAX_SPEED = 255;
+   static const int MAX_SPEED = 1023;
 
 private:
 

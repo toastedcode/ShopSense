@@ -24,6 +24,7 @@
 #include <VibrationSensor2.h>
 #include <WebClientAdapter.h>
 #include <WebServerAdapter.h>
+#include <WebTime.h>
 
 // *****************************************************************************
 //                               Global variables

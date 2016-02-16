@@ -73,6 +73,8 @@ bool Motor::handleMessage(
       // speed
       speed = castMessage->getSpeed();
 
+      Logger::logDebug("Speed = " + String(speed) + "\n");
+
       updatePins();
 
       Message* replyMessage = new MotorConfigReplyMsg(speed);
@@ -110,6 +112,7 @@ void Motor::directionPin(
    if (pin)
    {
       pin->digitalWrite(value);
+      Logger::logDebug("Direction pin[" + String(pin->getPinId()) + "] = " + String(value) + "\n");
    }
 }
 
@@ -121,5 +124,6 @@ void Motor::speedPin(
    if (pin)
    {
       pin->analogWrite(value);
+      Logger::logDebug("Speed pin[" + String(pin->getPinId()) + "] = " + String(value) + "\n");
    }
 }

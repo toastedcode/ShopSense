@@ -56,9 +56,9 @@ private:
    // Note: This value is calculated using the configured sensitivity.
    int getVibrationThreshold() const;
 
-   const int DEFAULT_SENSITIVITY = 50;  // %
+   const int DEFAULT_SENSITIVITY = 1;  // %
 
-   const int DEFAULT_RESPONSIVENESS = 50;  // %
+   const int DEFAULT_RESPONSIVENESS = 25;  // %
 
    const int INTERVAL_TIME = 500;  // milliseconds
 
@@ -125,7 +125,7 @@ inline int VibrationSensor2::getIntervalCount() const
 inline int VibrationSensor2::getVibrationThreshold() const
 {
    const int MIN_VIBRATION_THRESHOLD = 1;
-   const int MAX_VIBRATION_THRESHOLD = 1000;
+   const int MAX_VIBRATION_THRESHOLD = 100;
 
    return (constrain(((MAX_VIBRATION_THRESHOLD * sensitivity) / 100), MIN_VIBRATION_THRESHOLD, MAX_VIBRATION_THRESHOLD));
 }

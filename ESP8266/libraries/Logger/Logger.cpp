@@ -12,6 +12,8 @@
 
 Logger* Logger::instance = 0;
 
+bool Logger::loggingEnabled = true;
+
 void Logger::setLogger(
    Logger* logger)
 {

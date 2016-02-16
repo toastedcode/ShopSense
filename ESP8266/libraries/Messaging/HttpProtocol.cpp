@@ -20,8 +20,9 @@ static const String PING_REPLY_HTML = "<html><body><div>Ping reply from %s</div>
 static const String READ_PIN_REPLY_HTML = "<html><body><div>(%s) Read pin %d, value = %d</div></body></html>";
 static const String WRITE_PIN_REPLY_HTML = "<html><body><div>(%s) Write pin %d, value = %d</div></body></html>";
 static const String WIFI_CONFIG_REPLY_HTML = "<html><b>Wifi Setup</b></p><form method=\"get\" action=\"#\"><input type=\"hidden\" name=\"command\" value=\"wifi_config\"/><table><tr><td>SSID:</td><td><input type=\"text\" name=\"ssid\"/></td></tr><tr><td>Password:</td><td><input type=\"password\" name=\"password\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
-static const String VIBRATION_SENSOR_CONFIG_REPLY_HTML = "<html><b>Vibration Sensor Config</b></p><form method=\"get\" action=\"#\"><input type=\"hidden\" name=\"command\" value=\"vibration_sensor_config\"/><table><tr><td>Sensor id:</td><td><input type=\"text\" name=\"sensor_id\" value=\"%s\"/></td></tr><tr><td>Server IP:</td><td><input type=\"text\" name=\"server_ip\" value=\"%s\"/></td></tr><tr><td>Sensitivity:</td><td><input type=\"range\" name=\"sensitivity\" min=\"1\" max=\"100 value=\"%d\"></td></tr><tr><td>Responsiveness:</td><td><input type=\"range\" name=\"responsiveness\" min=\"1\" max=\"100\" value=\"%d\"><td></tr><tr><td>Enabled:</td><td><input type=\"checkbox\" name=\"enabled\" value=\"%s\" checked></td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
-static const String MOTOR_CONFIG_REPLY_HTML = "<html><b>Motor Config</b></p><form method=\"get\" action=\"#\"><table><tr><td>Speed:</td><td><input type=\"range\" name=\"speed\" min=\"-255\" max=\"255\" value=\"%d\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"/></td></tr></table></form></html>";
+static const String VIBRATION_SENSOR_CONFIG_REPLY_HTML = "<html><b>Vibration Sensor Config</b></p><form method=\"get\" action=\"#\"><table><tr><td>Sensor id:</td><td><input type=\"text\" name=\"sensor_id\" value=\"%s\"/></td></tr><tr><td>Server IP:</td><td><input type=\"text\" name=\"server_ip\" value=\"%s\"/></td></tr><tr><td>Sensitivity:</td><td><input type=\"range\" name=\"sensitivity\" min=\"1\" max=\"100\" value=\"%d\"></td></tr><tr><td>Responsiveness:</td><td><input type=\"range\" name=\"responsiveness\" min=\"1\" max=\"100\" value=\"%d\"><td></tr><tr><td><input type=\"submit\" value=\"Submit\"></td></tr></table></form></html>";
+//static const String MOTOR_CONFIG_REPLY_HTML = "<html><b>Motor Config</b></p><form method=\"get\" action=\"#\"><table><tr><td>Speed:</td><td><input type=\"range\" name=\"speed\" min=\"-1023\" max=\"1023\" value=\"%d\"/></td></tr><tr><td><input type=\"submit\" value=\"Submit\"/></td></tr></table></form></html>";
+static const String MOTOR_CONFIG_REPLY_HTML = "<html><b>Motor Config</b></p><form method=\"get\" action=\"#\">   <table>      <tr>         <td>Speed:</td>         <td><input id=\"speedInput\" type=\"range\" name=\"speed\" min=\"-1023\" max=\"1023\" value=\"%d\" oninput=\"onChange(this.value)\" onmouseup=\"onMouseUp()\"/></td>      </tr>      <tr>         <td><input type=\"submit\" value=\"Submit\"/></td>      </tr>   </table></form><script>function onMouseUp(){   document.getElementById(\"speedInput\").value = 0;     onChange(0);}function onChange(value){    var xhttp = new XMLHttpRequest();  xhttp.open(\"GET\", \"/motor1/motor_config?speed=\" + value, true);     xhttp.send();}</script></html>";
 
 bool HttpProtocol::parse(
    const String& string,
@@ -50,6 +51,22 @@ bool HttpProtocol::parse(
       {
          message = new PingMsg();
          parsed = true;
+      }
+      // SET_LOGGING_MSG
+      // Format: ping
+      else if (command == "logging")
+      {
+         String loggingEnabled = "";
+
+         if (getParameter(string, "enabled", REQUIRED, loggingEnabled))
+         {
+            message = new SetLoggingMsg((loggingEnabled == "true"));
+            parsed = true;
+         }
+         else
+         {
+            Logger::logDebug("Bad message format: \"" + string + "\".\n");
+         }
       }
       // READ_PIN_MSG
       // Format: read?pin=<pin id>
@@ -109,8 +126,8 @@ bool HttpProtocol::parse(
       {
          String sensorId = "";
          String serverIpAddress = "";
-         String sensitivity =  "";
-         String responsiveness = "";
+         String sensitivity =  "0";
+         String responsiveness = "0";
          String updateRate = "";
          String isEnabled = "";
 
@@ -294,8 +311,7 @@ bool HttpProtocol::serialize(
                  castMessage->getSensorId().c_str(),
                  castMessage->getServerIpAddress().c_str(),
                  castMessage->getSensitivity(),
-                 castMessage->getResponsiveness(),
-                 castMessage->getSuccess());
+                 castMessage->getResponsiveness());
 
          string = httpReply(String(buffer));
 
@@ -374,11 +390,9 @@ bool HttpProtocol::tokenizeMessage(
 
    String tokens[MAX_NUM_TOKENS] = {"", "", ""};
 
-   Logger::logDebug("Remaining: " + remainingString + "/n");
-
    int i = 0;
    tokens[i] = Utility::tokenize(remainingString, SEPERATORS);
-   Logger::logDebug("Tokens = " + tokens[i] + ", ");
+
    while (remainingString.length() > 0)
    {
       String token =  Utility::tokenize(remainingString, SEPERATORS);
@@ -387,13 +401,10 @@ bool HttpProtocol::tokenizeMessage(
       if (i < MAX_NUM_TOKENS)
       {
          tokens[i] = token;
-         Logger::logDebug(tokens[i] + ", ");
       }
    }
-   Logger::logDebug("\n");
 
    int tokenCount = (i + 1);
-   Logger::logDebug("Token count = " + String(tokenCount) + "\n");
 
    bool hasParams = (Utility::findFirstOf(string, PARAM_START) != -1);
 

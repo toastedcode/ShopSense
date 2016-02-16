@@ -23,6 +23,7 @@ ToastBot* ToastBot::instance;
 void ToastBot::begin()
 {
    Logger::setLogger(new SerialLogger());
+   Logger::setEnabled(true);
 
    // Register with the message router.
    // Note: Make it the default handler.
@@ -56,15 +57,27 @@ bool ToastBot::handleMessage(
    if (message.getMessageId() == PingMsg::MESSAGE_ID)
    {
       Logger::logDebug("Ping\n");
+      handled = true;
 
       String ipAddress = Utility::toString(Esp8266::getInstance()->getIpAddress());
       Message* replyMessage = new PingReplyMsg(ipAddress);
       replyMessage->address(getId(), message.getSource());
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }
-   if (message.getMessageId() == WifiConfigMsg::MESSAGE_ID)
+   // SET_LOGGING
+   else if (message.getMessageId() == SetLoggingMsg::MESSAGE_ID)
+   {
+      Logger::logDebug("SetLogging\n");
+      handled = true;
+
+      const SetLoggingMsg* castMessage = static_cast<const SetLoggingMsg*>(&message);
+
+      Logger::setEnabled(castMessage->isLoggingEnabled());
+   }
+   else if (message.getMessageId() == WifiConfigMsg::MESSAGE_ID)
    {
       Logger::logDebug("Wifi Config\n");
+      handled = true;
 
       bool success = false;
 
@@ -99,6 +112,7 @@ bool ToastBot::handleMessage(
    else if (message.getMessageId() == ReadPinMsg::MESSAGE_ID)
    {
       Logger::logDebug("Read Pin\n");
+      handled = true;
 
       bool success = false;
 
@@ -120,6 +134,7 @@ bool ToastBot::handleMessage(
    else if (message.getMessageId() == WritePinMsg::MESSAGE_ID)
    {
       Logger::logDebug("Write Pin\n");
+      handled = true;
 
       bool success = false;
 
@@ -159,23 +174,6 @@ bool ToastBot::handleMessage(
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }
    */
-   else if (message.getMessageId() == VibrationSensorConfigMsg::MESSAGE_ID)
-   {
-      Logger::logDebug("Vibration Sensor Config\n");
-
-      bool success = false;
-
-      const VibrationSensorConfigMsg* castMessage = static_cast<const VibrationSensorConfigMsg*>(&message);
-
-      Message* replyMessage = new VibrationSensorConfigReplyMsg(castMessage->getSensorId(),
-                                                                castMessage->getServerIpAddress(),
-                                                                castMessage->getSensitivity(),
-                                                                castMessage->getResponsiveness(),
-                                                                castMessage->getIsEnabled(),
-                                                                success);
-      replyMessage->address(getId(), message.getSource());
-      MessageRouter::getInstance()->sendMessage(*replyMessage);
-   }
 
    return (handled);
 }

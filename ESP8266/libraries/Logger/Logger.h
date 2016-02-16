@@ -28,6 +28,9 @@ public:
    static void logDebug(
       const String& string);
 
+   static void setEnabled(
+      const bool& loggingEnabled);
+
    virtual void log(
       const String& string);
 
@@ -39,6 +42,7 @@ private:
 
    static Logger* instance;
 
+   static bool loggingEnabled;
 };
 
 // *****************************************************************************
@@ -47,7 +51,7 @@ private:
 inline void Logger::logDebug(
    const String& string)
 {
-   if (instance)
+   if (instance && loggingEnabled)
    {
       getInstance()->log(string);
    }
@@ -56,6 +60,12 @@ inline void Logger::logDebug(
 inline Logger* Logger::getInstance()
 {
    return (instance);
+}
+
+inline void Logger::setEnabled(
+   const bool& loggingEnabled)
+{
+   Logger::loggingEnabled = loggingEnabled;
 }
 
 #endif  // LOGGER_H_INCLUDED

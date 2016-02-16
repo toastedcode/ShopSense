@@ -18,6 +18,7 @@
 #include "ReadPinMsg.h"
 #include "ReadPinReplyMsg.h"
 #include "SensorUpdateMsg.h"
+#include "SetLoggingMsg.h"
 #include "VibrationSensorConfigMsg.h"
 #include "VibrationSensorConfigReplyMsg.h"
 #include "WifiConfigMsg.h"

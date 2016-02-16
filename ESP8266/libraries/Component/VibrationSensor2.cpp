@@ -22,6 +22,7 @@ VibrationSensor2::VibrationSensor2(
    const int& pinId) : Component(id)
 {
    this->pinId = pinId;
+   serverId = "";
    sensitivity = DEFAULT_SENSITIVITY;
    responsiveness= DEFAULT_RESPONSIVENESS;
 
@@ -95,8 +96,8 @@ void VibrationSensor2::run()
          queuePosition = 0;
       }
 
-      // Record the number of detected vibrations for this interval.
-      queue[queuePosition] += vibrationCount;
+      // Record the vibrating state for this interval.
+      queue[queuePosition] = (vibrationCount > getVibrationThreshold()) ? VIBRATING : NOT_VIBRATING;
 
       // Calculate the total number of detected vibrations over all the observed intervals.
       int total = 0;
@@ -107,7 +108,22 @@ void VibrationSensor2::run()
 
       // Calculate the new overall vibration state.
       bool prevState = state;
-      state = (total > getVibrationThreshold());
+      state = (total > (getIntervalCount() / 2));
+
+#if 0
+      String debugString = "";
+      for (int i = 0; i < getIntervalCount(); i++)
+      {
+         debugString += "[" + String(queue[i]) + "]";
+      }
+      debugString += "\n";
+      debugString += "vibration count = " + String(vibrationCount) + ", threshold = " + String(getVibrationThreshold());
+      debugString += "\n";
+      debugString += "total = " + String(total) + ", state = " + String(state);
+      debugString += "\n";
+      debugString += "\n";
+      Logger::logDebug(debugString);
+#endif
 
       // Respond to state changes.
       if (prevState != state)
@@ -142,6 +158,7 @@ bool VibrationSensor2::handleMessage(
 
       handled = true;
 
+
       const VibrationSensorConfigMsg* castMessage = static_cast<const VibrationSensorConfigMsg*>(&message);
 
       // sensorId
@@ -160,12 +177,16 @@ bool VibrationSensor2::handleMessage(
       if (castMessage->getSensitivity() != 0)
       {
          sensitivity = castMessage->getSensitivity();
+
+         Logger::logDebug("Sensitivity = " + String(sensitivity) + "\n");
       }
 
       // responsiveness
       if (castMessage->getResponsiveness() != 0)
       {
-         responsiveness = castMessage->getSensitivity();
+         responsiveness = castMessage->getResponsiveness();
+
+         Logger::logDebug("Responsiveness = " + String(responsiveness) + "\n");
       }
 
       // isEnabled
@@ -177,6 +198,7 @@ bool VibrationSensor2::handleMessage(
                                                                 responsiveness,
                                                                 true,            // isEnabled  TODO
                                                                 true);           // success
+
       replyMessage->address(getId(), message.getSource());
       MessageRouter::getInstance()->sendMessage(*replyMessage);
    }

@@ -91,7 +91,7 @@ const Message* WebServerAdapter::getMessage()
 
          if (message)
          {
-            message->address(getId(), getDestination(string));
+            message->address(getId(), message->getDestination());
          }
       }
    }
@@ -99,6 +99,7 @@ const Message* WebServerAdapter::getMessage()
    return (message);
 }
 
+// TODO: Use protocol to extract destination from raw message.
 String WebServerAdapter::getDestination(
    const String& string)
 {
