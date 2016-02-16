@@ -19,6 +19,7 @@
 #include <MqttAdapter.h>
 #include <PubSubClient.h>
 #include <QueueList.h>
+#include <SimpleList.h>
 #include <Timer.h>
 #include <ToastBot.h>
 #include <Utility.h>
@@ -34,6 +35,7 @@
 
 const String DWEET_SERVER_ADDRESS = "dweet.io";
 const String MQTT_SERVER_ADDRESS = "test.mosquitto.org";
+const int MQTT_SERVER_PORT = 1883;
 
 VibrationSensor2 sensor("pptp_machine01_vibration", 14);
 
@@ -66,8 +68,9 @@ void setup()
   //MessageRouter::getInstance()->registerAdapter(dweetAdapter);
 
   mqttAdapter.setProtocol(jsonProtcol);
-  mqttAdapter.setServerAddress(MQTT_SERVER_ADDRESS, 1883);
+  mqttAdapter.setServerAddress(MQTT_SERVER_ADDRESS, MQTT_SERVER_PORT);
   mqttAdapter.setPublishTopic("pittsburghprecision.com/sensors/");
+  mqttAdapter.subscribe("pittsburghprecision.com/sensors/pptp_machine01_vibration/config/");
   MessageRouter::getInstance()->registerAdapter(mqttAdapter);
 }
 

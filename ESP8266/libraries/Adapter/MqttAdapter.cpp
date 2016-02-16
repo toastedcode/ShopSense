@@ -16,13 +16,11 @@ WiFiClient MqttAdapter::client;
 
 PubSubClient MqttAdapter::mqttClient(client);
 
-typedef void (*MqttCallbackFunction)(char*, unsigned char*, unsigned int);
-
 MqttAdapter::MqttAdapter(
    const String& id) : Adapter(id)
 {
-   // TODO: Have to solve this.  Can't pass member function as parameter.
-   //mqttClient.setCallback(callback);
+   mqttClient.setCallback(this);
+   subscriptions.reserve(10);
 }
 
 MqttAdapter::~MqttAdapter()
@@ -74,40 +72,28 @@ const Message* MqttAdapter::getMessage()
 {
    Message* message = 0;
 
-   /*
    // Let the MQTT client listen for connections and fill the message queue.
    mqttClient.loop();
 
    // Return the top message, if one exists.
-   return (messageQueue.pop());
-   */
+   if (!messageQueue.isEmpty())
+   {
+      message = messageQueue.pop();
+   }
 
    return (message);
 }
 
-
-bool MqttAdapter::connect()
+void MqttAdapter::subscribe(
+   const String& topic)
 {
-  if (!mqttClient.connected())
-  {
-     Logger::logDebug("Attempting MQTT connection to " + serverAddress + ":" + String(port) + " ... ");
+   subscriptions.push_back(topic);
 
-     mqttClient.setServer(serverAddress.c_str(), port);
-
-     if (mqttClient.connect("MQTTClient"))  // TODO Configured client handle.
-     {
-        Logger::logDebug("success!\n");
-
-       // Subscribe to posts.
-       // subscribe()
-     }
-     else
-     {
-        Logger::logDebug("failed!\n");
-     }
+   if ((mqttClient.connected()) &&
+       (mqttClient.subscribe(topic.c_str())))
+   {
+      Logger::logDebug("Subscribed to \"" + topic + "\"\n");
    }
-
-  return (mqttClient.connected());
 }
 
 void MqttAdapter::callback(
@@ -125,14 +111,21 @@ void MqttAdapter::callback(
       buffer[BUFFER_SIZE - 1] = 0;
       String messageString(buffer);
 
-      // Parse the message.
       Message* message = 0;
-      protocol->parse(messageString, message);
+      String componentId = "";
+      String messageId = "";
 
-      // Add to message queue.
-      if (message)
+      // Parse the message.
+      if ((parseTopic(topic, componentId, messageId)) &&
+          (protocol->parse(messageString, message)))
       {
+         // Add to message queue.
+         message->address(getId(), componentId);
          messageQueue.push(message);
+      }
+      else
+      {
+         Logger::logDebug("Failed to parse message.\n");
       }
    }
    else
@@ -141,10 +134,75 @@ void MqttAdapter::callback(
    }
 }
 
-void MqttAdapter::parseTopic(
+bool MqttAdapter::connect()
+{
+  if (!mqttClient.connected())
+  {
+     Logger::logDebug("Attempting MQTT connection to " + serverAddress + ":" + String(port) + " ... ");
+
+     mqttClient.setServer(serverAddress.c_str(), port);
+
+     if (mqttClient.connect("MQTTClient"))  // TODO Configured client handle.
+     {
+        Logger::logDebug("success!\n");
+
+        // Re-subscribe to posts.
+        for (SimpleList<String>::iterator it = subscriptions.begin(); it != subscriptions.end(); it++)
+        {
+           mqttClient.subscribe(it->c_str());
+           Logger::logDebug("Subscribed to \"" + *it + "\"\n");
+        }
+     }
+     else
+     {
+        Logger::logDebug("failed!\n");
+     }
+   }
+
+  return (mqttClient.connected());
+}
+
+bool MqttAdapter::parseTopic(
    const String& topic,
    String& componentId,
    String& messageId)
 {
+   const String SEPERATORS = "/";
+   const int MAX_NUM_TOKENS = 5;
+   const int MIN_NUM_TOKENS = 3;
 
+   bool parsed = false;
+
+   String tokens[MAX_NUM_TOKENS] = {"", "", "", "", ""};
+   String remainingString = topic;
+
+   int i = 0;
+   tokens[i] = Utility::tokenize(remainingString, SEPERATORS);
+
+   while (remainingString.length() > 0)
+   {
+      String token =  Utility::tokenize(remainingString, SEPERATORS);
+
+      i++;
+      if (i < MAX_NUM_TOKENS)
+      {
+         tokens[i] = token;
+      }
+   }
+
+   int tokenCount = (i + 1);
+
+   // Our expected format: companyname.com/.../component/message
+   if (tokenCount >= MIN_NUM_TOKENS)
+   {
+      componentId = tokens[tokenCount - 2];
+      messageId = tokens[tokenCount - 1];
+      parsed = true;
+   }
+   else
+   {
+      Logger::logDebug("Not enough tokens.\n");
+   }
+
+   return (parsed);
 }

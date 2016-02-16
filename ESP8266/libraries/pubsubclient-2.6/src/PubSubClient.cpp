@@ -305,7 +305,7 @@ boolean PubSubClient::loop() {
                 lastInActivity = t;
                 uint8_t type = buffer[0]&0xF0;
                 if (type == MQTTPUBLISH) {
-                    if (callback) {
+                    if (callbackSet()) {
                         uint16_t tl = (buffer[llen+1]<<8)+buffer[llen+2];
                         char topic[tl+1];
                         for (uint16_t i=0;i<tl;i++) {
@@ -316,7 +316,7 @@ boolean PubSubClient::loop() {
                         if ((buffer[0]&0x06) == MQTTQOS1) {
                             msgId = (buffer[llen+3+tl]<<8)+buffer[llen+3+tl+1];
                             payload = buffer+llen+3+tl+2;
-                            callback(topic,payload,len-llen-3-tl-2);
+                            doCallback(topic,payload,len-llen-3-tl-2);
 
                             buffer[0] = MQTTPUBACK;
                             buffer[1] = 2;
@@ -327,7 +327,7 @@ boolean PubSubClient::loop() {
 
                         } else {
                             payload = buffer+llen+3+tl;
-                            callback(topic,payload,len-llen-3-tl);
+                            doCallback(topic,payload,len-llen-3-tl);
                         }
                     }
                 } else if (type == MQTTPINGREQ) {
@@ -587,4 +587,33 @@ PubSubClient& PubSubClient::setStream(Stream& stream){
 
 int PubSubClient::state() {
     return this->_state;
+}
+
+// **************************************************************************
+// TOAST CHANGES
+
+
+bool PubSubClient::callbackSet()
+{
+   return (callback || subscriptionHandler);
+}
+
+PubSubClient& PubSubClient::setCallback(SubscriptionHandler* subscriptionHandler)
+{
+   this->subscriptionHandler = subscriptionHandler;
+   callback = 0;
+
+   return *this;
+}
+
+void PubSubClient::doCallback(char* topic, uint8_t* payload, unsigned int length)
+{
+   if (callback)
+   {
+      callback(topic, payload, length);
+   }
+   else if (subscriptionHandler)
+   {
+      subscriptionHandler->callback(topic, payload, length);
+   }
 }

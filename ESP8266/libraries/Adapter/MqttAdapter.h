@@ -15,8 +15,9 @@
 #include "ESP8266WiFi.h"
 #include "PubSubClient.h"
 #include "QueueList.h"
+#include "SimpleList.h"
 
-class MqttAdapter : public Adapter
+class MqttAdapter : public Adapter, PubSubClient::SubscriptionHandler
 {
 
 public:
@@ -53,22 +54,16 @@ public:
       // The topic to subscribe.
       const String& topic);
 
-private:
-
-   bool connect();
-
-   static void memberFunctionWrapper(
-      void* adapter,
-      char* topic,
-      unsigned char* payload,
-      unsigned int length);
-
    void callback(
       char* topic,
       unsigned char* payload,
       unsigned int length);
 
-   static void parseTopic(
+private:
+
+   bool connect();
+
+   static bool parseTopic(
       const String& topic,
       String& componentId,
       String& messageId);
@@ -90,6 +85,9 @@ private:
 
    // Queue for incoming messages.
    QueueList<Message*> messageQueue;
+
+   // Subscription list.
+   SimpleList<String> subscriptions;
 };
 
 // *****************************************************************************

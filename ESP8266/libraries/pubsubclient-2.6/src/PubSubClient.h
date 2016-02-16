@@ -138,6 +138,28 @@ public:
    boolean loop();
    boolean connected();
    int state();
+
+   // **************************************************************************
+   // TOAST CHANGES
+
+   // Interface for a subscription handler object that can process incoming MQTT messages.
+   class SubscriptionHandler
+   {
+   public:
+      virtual void callback(char* topic, uint8_t* payload, unsigned int length) = 0;
+   };
+
+   // Returns true if either a callback function, or subscription handler, has been set.
+   bool callbackSet();
+
+   // Allows the client to set a callback object (rather than a callback function).
+   PubSubClient& setCallback(SubscriptionHandler* subscriptionHandler);
+
+   // Calls either the callback function, or the callback object, depending on which was was set.
+   void doCallback(char* topic, uint8_t* payload, unsigned int length);
+
+   // A pointer the SubscriptionHandler object that will handle incoming MQTT messages.
+   SubscriptionHandler* subscriptionHandler;
 };
 
 
