@@ -59,9 +59,6 @@ bool JsonProtocol::parse(
       // Format: {"command":"wifi_config", "ssid":"<ssid>", "password":"<password>"}
       else if (command == "wifi_config")
       {
-         String ssid = "";
-         String password = "";
-
          if ((json.containsKey("ssid")) &&
              (json.containsKey("password")))
          {
@@ -81,13 +78,6 @@ bool JsonProtocol::parse(
       //          "is_enabled":"<is_enabled>"}
       else if (command == "vibration_sensor_config")
       {
-         String sensorId = "";
-         String serverIpAddress = "";
-         String sensitivity =  "0";
-         String responsiveness = "0";
-         String updateRate = "";
-         String isEnabled = "";
-
          if ((json.containsKey("sensitivity")) &&
              (json.containsKey("responsiveness")) &&
              (json.containsKey("update_rate")) &&
@@ -109,8 +99,6 @@ bool JsonProtocol::parse(
       // Format: {"command":"motor_config", "speed":"<speed>"}
       else if (command == "motor_config")
       {
-         String speed = "";
-
          if (json.containsKey("speed"))
          {
             int speed = json.get("speed");
@@ -122,16 +110,14 @@ bool JsonProtocol::parse(
             Logger::logDebug("Bad message format: \"" + string + "\".\n");
          }
       }
-
-      if (message)
-      {
-         // Address to the component, if specified.
-         //message->address("", component);
-      }
       else
       {
          Logger::logDebug("Unsupported message: \"" + command + "\".\n");
       }
+   }
+   else
+   {
+      Logger::logDebug("Bad JSON syntax: \"" + string + "\".\n");
    }
 
    return (parsed);
@@ -166,6 +152,9 @@ bool JsonProtocol::serialize(
 
         // Serialize to string.
         json.printTo(string);
+
+        // Delete the JSON object.
+        //delete &json;
 
         serialized = true;
      }

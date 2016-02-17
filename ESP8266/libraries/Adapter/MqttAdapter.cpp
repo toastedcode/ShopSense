@@ -108,7 +108,7 @@ void MqttAdapter::callback(
    {
       // Convert the payload into a String.
       memcpy(buffer, payload, length);
-      buffer[BUFFER_SIZE - 1] = 0;
+      buffer[length] = 0;
       String messageString(buffer);
 
       Message* message = 0;
@@ -172,6 +172,8 @@ bool MqttAdapter::parseTopic(
    const int MIN_NUM_TOKENS = 3;
 
    bool parsed = false;
+
+   Logger::logDebug("Parsing topic: " + topic + "\n");
 
    String tokens[MAX_NUM_TOKENS] = {"", "", "", "", ""};
    String remainingString = topic;
