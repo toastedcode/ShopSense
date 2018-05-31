@@ -21,10 +21,8 @@
 //                               Global variables
 // *****************************************************************************
 
-static const String SSID = "NETGEAR69"; 
-static const String PASSWORD = "silentsky723";
-//static const String SSID = "compunetix-guest"; 
-//static const String PASSWORD = "compunetix";
+static const String SSID = "REDACTED"; 
+static const String PASSWORD = "REDACTED";
 //static const String SENSOR_NAME = "button_01";
 static const String SENSOR_NAME = "vibration_01";
 static const int SENSOR_PIN = 2;
